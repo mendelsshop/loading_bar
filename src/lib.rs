@@ -1,8 +1,11 @@
 use std::fmt;
 extern crate colored;
 
-use colored::*;
+// use colored::*;
+// use colored::Color;
 pub use colored::Color;
+use colored::Colorize;
+
 
 #[derive(Debug)]
 pub struct LoadingBar {
