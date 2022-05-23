@@ -2,7 +2,7 @@
 
 ### Installation
 
-Put the follwing in your Cargo.toml file under `[dependencies]`: 
+Put the following in your Cargo.toml file under `[dependencies]`: 
 
 ```toml
 [dependencies]
