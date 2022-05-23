@@ -47,7 +47,7 @@ impl LoadingBar {
         match reminder {
             0=> {},
             _ => {
-                self.bar = self.bar.replacen(' ', "\u{25Ae}", 1);
+                self.bar = self.bar.replacen(' ', "\u{25E3}", 1);
             }
         }
         self.index += index; // increment
