@@ -42,7 +42,14 @@ impl LoadingBar {
 
     pub fn advance_by_percent(self: &mut LoadingBar, percentage: f64) {
         let index = (self.len as f64 * percentage / 100.0) as u64;
+        let reminder = (self.len as f64 * percentage % 100.0) as u64;
         self.bar = self.bar.replacen(' ', "\u{25A0}", index as usize);
+        match reminder {
+            0=> {},
+            _ => {
+                self.bar = self.bar.replacen(' ', "\u{25Ae}", 1);
+            }
+        }
         self.index += index; // increment
         if self.index >= self.len {
             self.done = true;
