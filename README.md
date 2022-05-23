@@ -1,6 +1,13 @@
 # loading_bar
 
-### Installation
+## About:
+This my "Awesome" loading bar library.
+<br>
+The loading bar is a simple progress bar that can be used to show the progress of a long running process.
+<br>
+And different ways to advance the loading bar.
+
+## Installation
 
 Put the following in your Cargo.toml file under `[dependencies]`: 
 
@@ -8,15 +15,7 @@ Put the following in your Cargo.toml file under `[dependencies]`:
 [dependencies]
 "loading_bar" = { git = 'https://github.com/mendelsshop/loading_bar' }
 ```
-
 ### For a full example, see the [example](https://github.com/mendelsshop/load_test) repo.
-
-This my "Awesome" loading bar library.
-<br>
-The main.rs shows a simple example of how to use the library.
-<br>
-The loading bar is a simple progress bar that can be used to show the progress of a long running process.
-<br>
 
 ## You can create a progress bar with the following code:
 ```rust
