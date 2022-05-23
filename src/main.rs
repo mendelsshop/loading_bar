@@ -21,4 +21,5 @@ fn main() {
         // flush stdout or else wont work properly
         std::io::stdout().flush().unwrap();
     }
+    println!("");
 }
