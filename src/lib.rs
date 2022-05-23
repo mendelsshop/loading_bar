@@ -41,9 +41,6 @@ impl LoadingBar {
     }
 
     pub fn advance_by_percent(self: &mut LoadingBar, percentage: f64) {
-        // we have to get the percentage of the bar
-        // and then we have to get the index of the bar
-        // that we want to advance
         let index = (self.len as f64 * percentage / 100.0) as u64;
         self.bar = self.bar.replacen(' ', "\u{25A0}", index as usize);
         self.index += index; // increment
@@ -57,15 +54,11 @@ impl LoadingBar {
     }
 }
 impl fmt::Display for LoadingBar {
-    // fn fmt(&self, f: &mut fmt::Formatter)
-    //     -> fmt::Result {
-    //         write!(f, " {0} \n[{1}]\n {2} ", string_from_u64(self.len, '\u{2581}'), self.bar, string_from_u64(self.len, '\u{2594}'))
-    //     }
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
             "\r[{}]",
-            self.bar.color(self.color.unwrap_or(colored::Color::White))
+            self.bar.color(self.color.unwrap_or(colored::Color::White)) // if we have a color, use it, otherwise use white
         )
     }
 }
@@ -74,6 +67,5 @@ fn string_from_u64(len: u64, replace: char) -> String {
     for _i in 0..len {
         string.push(replace);
     }
-    // println!("{}", string);
     string
 }
