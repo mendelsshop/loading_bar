@@ -2,6 +2,7 @@ use std::fmt;
 extern crate colored;
 
 use colored::*;
+pub use colored::Color;
 
 #[derive(Debug)]
 pub struct LoadingBar {
