@@ -26,7 +26,7 @@ use loading_bar::{LoadingBar, Color}; // if you want to use the color feature
 
 bar = LoadingBar::new(100, None); // this creates a new loading bar with 100 steps and the default color
 
-bar = LoadingBar::new(100, Some(colored::Color::Green)); // this creates a new loading bar with 100 steps and the green color
+bar = LoadingBar::new(100, Some(Color::Green)); // this creates a new loading bar with 100 steps and the green color
 ``` 
 ### Note the following examples assume that you have imported the [`loading_bar`](https://github.com/mendelsshop/loading_bar) crate.
 ## You can incremt the progress of the loading bar with the following code:
