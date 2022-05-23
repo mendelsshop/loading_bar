@@ -35,7 +35,7 @@ impl LoadingBar {
     pub fn advance_by(self: &mut LoadingBar, index: u64) {
         self.bar = self.bar.replacen(' ', "\u{25A0}", index as usize);
         self.index += index; // increment
-        if self.index == self.len {
+        if self.index >= self.len {
             self.done = true;
         }
     }
@@ -44,7 +44,7 @@ impl LoadingBar {
         let index = (self.len as f64 * percentage / 100.0) as u64;
         self.bar = self.bar.replacen(' ', "\u{25A0}", index as usize);
         self.index += index; // increment
-        if self.index == self.len {
+        if self.index >= self.len {
             self.done = true;
         }
     }
