@@ -4,7 +4,7 @@ use std::{io::Write, thread, time};
 fn main() {
     let mut bar = LoadingBar::new(50, Some(colored::Color::Green));
 
-    print!("\r{}", bar);
+    print!("{}", bar);
     std::io::stdout().flush().unwrap();
     // flush stdout or else wont work properly
 
@@ -16,7 +16,7 @@ fn main() {
         let ten_millis = time::Duration::from_secs(3); // wow what a descriptive name
         thread::sleep(ten_millis); // sleep for 1 seconds
         bar.advance_by_percent(25.0); // advancing by 25%
-        print!("\r{}", bar);
+        print!("{}", bar);
         bar.change_color(colored::Color::Red);
         // flush stdout or else wont work properly
         std::io::stdout().flush().unwrap();
