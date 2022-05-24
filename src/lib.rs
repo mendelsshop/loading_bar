@@ -32,6 +32,9 @@ impl LoadingBar {
     }
 
     pub fn advance_by_percent(&mut self, percentage: f64) {
+        if percentage > 100.0 {
+            panic!("percentage must be between 0 and 100");
+        }
         let index = (self.len as f64 * percentage / 100.0) as u64;
         let reminder = (self.len as f64 * percentage % 100.0) as u64;
         if self.half {
@@ -68,9 +71,8 @@ impl LoadingBar {
             if self.space_left == 0 {
                 self.done = true;
             }
-        } else {
-            self.done = true;
-            self.space_left = 0;
+        }  else {
+            panic!("adv_val must be less than or equal to len");
         }
     }
 }
