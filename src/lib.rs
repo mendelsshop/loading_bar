@@ -1,7 +1,7 @@
 pub use colored::Color;
 use colored::Colorize;
 use std::fmt;
-use std::io::{Write, self};
+use std::io::{self, Write};
 
 // TODO: make a display function for the struct
 // for now, I'll just reprint the struct each time it gets updated
@@ -78,7 +78,7 @@ impl LoadingBar {
             if self.space_left == 0 {
                 self.done = true;
             }
-        }  else {
+        } else {
             panic!("\x07 You can't advance more than the length of the bar\x07");
         }
         print!("\r{}", self);
