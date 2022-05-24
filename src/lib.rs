@@ -4,7 +4,6 @@ use std::fmt;
 
 #[derive(Debug, Clone)]
 pub struct LoadingBar {
-    // bar: String,
     pub len: u64,
     index: u64,
     pub done: bool,
@@ -15,7 +14,6 @@ pub struct LoadingBar {
 impl LoadingBar {
     pub fn new(len: u64, color: Option<colored::Color>) -> LoadingBar {
         LoadingBar {
-            // bar: string_from_u64(len, ' '),
             len,
             index: 0,
             done: false,
@@ -88,7 +86,6 @@ impl fmt::Display for LoadingBar {
         for _ in self.index..self.len {
             bar.push(' ');
         }
-        // self.bar = bar;
         write!(
             f,
             "\r[{}]",
