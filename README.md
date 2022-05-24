@@ -45,8 +45,9 @@ bar.advance_by_percent(100); // this increments the loading bar by 100%
 ## To change the color:
 
 ```rust
-bar.change_color(Color::Red); // this changes the color of the loading bar to red
+bar.change_color(Some(Color::Red)); // this changes the color of the loading bar to red
 // the change_color does not immediately change the color of the loading bar, it only changes the color when the next step is incremented when you print the bar next
+bar.change_color(None); // changes the color to white (the default color)
 ```
 
 ### Note:
