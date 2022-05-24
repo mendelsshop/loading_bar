@@ -1,6 +1,10 @@
 pub use colored::Color;
 use colored::Colorize;
 use std::fmt;
+use std::io::{Write, self};
+
+// TODO: make a display function for the struct
+// for now, I'll just reprint the struct each time it gets updated
 
 #[derive(Debug, Clone)]
 pub struct LoadingBar {
@@ -61,8 +65,11 @@ impl LoadingBar {
     }
 
     pub fn change_color(self: &mut LoadingBar, color: Option<colored::Color>) {
-        self.color = color
+        self.color = color;
+        print!("\r{}", self);
+        io::stdout().flush().unwrap();
     }
+
     fn adv_index(&mut self, adv_val: u64) {
         if self.index + adv_val <= self.len {
             self.index += adv_val;
@@ -74,6 +81,8 @@ impl LoadingBar {
         }  else {
             panic!("\x07 You can't advance more than the length of the bar\x07");
         }
+        print!("\r{}", self);
+        io::stdout().flush().unwrap();
     }
 }
 impl fmt::Display for LoadingBar {
