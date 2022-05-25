@@ -7,14 +7,14 @@ The loading bar is a simple progress bar that can be used to show the progress o
 <br>
 And different ways to advance the loading bar.
 
-## Installation
-
+## Installation:
 Put the following in your Cargo.toml file under `[dependencies]`: 
 
 ```toml
 [dependencies]
 "loading_bar" = { git = 'https://github.com/mendelsshop/loading_bar' }
 ```
+
 ### For a full example, see the [example](https://github.com/mendelsshop/load_test) repo.
 
 ## You can create a progress bar with the following code:
