@@ -64,6 +64,32 @@ impl LoadingBar {
         }
     }
 
+    pub fn auto_run(time_in_seconds: u64, len: u64, start: u64, color: Option<colored::Color>) {
+        if start > len {
+            println!();
+            panic!("\x07start must be less than len\x07");
+        }
+        // find the amount of time that has per incremen
+        let index = time_in_seconds as f64 / (len - start) as f64;
+        let mut self_clone = LoadingBar {
+            len,
+            index: start,
+            done: false,
+            color,
+            space_left: len - start,
+            half: false,
+        };
+        print!("{}", self_clone);
+        std::thread::spawn(move || {
+            for _ in 0..(self_clone.space_left) {
+                self_clone.advance();
+                std::thread::sleep(std::time::Duration::from_secs_f64(index));
+            }
+        })
+        .join()
+        .unwrap();
+    }
+
     pub fn change_color(self: &mut LoadingBar, color: Option<colored::Color>) {
         self.color = color;
         print!("\r{}", self);

@@ -50,5 +50,11 @@ bar.change_color(Some(Color::Red)); // this changes the color of the loading bar
 bar.change_color(None); // changes the color to white (the default color)
 ```
 
+## We can have a loading bar that that is automatically instaciated and incremented (We have no control over updating it manually):
+```rust
+LoadingBar::auto_run(10, 50, 10, Some(Color::Red)); // this creates a new loading bar lasts 10 seconds, with a length of 50, and starts at 10 bars with the color red.
+LoadingBar::auto_run(10, 50, 10, None); // as above but with the default color
+```
+
 ### Note:
 color documentation and source can be found at https://docs.rs/colored/2.0.0/colored/enum.Color.html.
