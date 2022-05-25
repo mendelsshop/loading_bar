@@ -80,6 +80,8 @@ impl LoadingBar {
             half: false,
         };
         print!("{}", self_clone);
+        // flush the buffer
+        io::stdout().flush().unwrap();
         std::thread::spawn(move || {
             for _ in 0..(self_clone.space_left) {
                 self_clone.advance();
