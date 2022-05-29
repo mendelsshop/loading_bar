@@ -1,5 +1,9 @@
 pub use colored::Color;
 use colored::Colorize;
+use crossterm::{
+    cursor::{Hide, MoveDown, MoveLeft, MoveRight, MoveUp, Show},
+    execute, ExecutableCommand, Result,
+};
 use std::fmt;
 use std::io::{self, Write};
 
@@ -14,6 +18,8 @@ pub struct LoadingBar {
     color: Option<colored::Color>,
     pub space_left: u64,
     half: bool,
+    top_text: String,
+    bottom_text: String,
 }
 impl LoadingBar {
     pub fn new(len: u64, color: Option<colored::Color>) -> LoadingBar {
@@ -24,7 +30,17 @@ impl LoadingBar {
             color,
             space_left: len,
             half: false,
+            top_text: String::new(),
+            bottom_text: String::new(),
         }
+    }
+
+    pub fn set_top_text(&mut self, text: &str) {
+        self.top_text = text.to_string();
+    }
+
+    pub fn set_bottom_text(&mut self, text: &str) {
+        self.bottom_text = text.to_string();
     }
 
     pub fn advance(self: &mut LoadingBar) {
@@ -64,6 +80,8 @@ impl LoadingBar {
         }
     }
 
+    // TODO have similar functions for with hashmaps or vectors of colors
+    // and or text (and each peice's of txt postion top/bottom) for different percentages
     pub fn auto_run(time_in_seconds: u64, len: u64, start: u64, color: Option<colored::Color>) {
         if start > len {
             println!();
@@ -78,6 +96,8 @@ impl LoadingBar {
             color,
             space_left: len - start,
             half: false,
+            top_text: String::new(),
+            bottom_text: String::new(),
         };
         print!("{}", self_clone);
         // flush the buffer
