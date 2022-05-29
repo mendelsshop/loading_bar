@@ -36,10 +36,10 @@ bar.advance(); // this increments the loading bar by 1 step
 // takes no paramters
 
 bar.advance_by(10); // this increments the loading bar by 10 steps
-// takes a paramter of u64
+// takes a paramter of u16
 
 bar.advance_by_percent(100); // this increments the loading bar by 100%
-// takes a paramter of f64
+// takes a paramter of f32
 ```
 
 ## To change the color:
