@@ -11,6 +11,11 @@ And different ways to advance the loading bar.
 
 ## Installation:
 Put the following in your Cargo.toml file under `[dependencies]`: 
+```toml
+[dependencies]
+loading_bar = "1.0.0"
+```
+Or the following if you want to test the latest features:
 
 ```toml
 [dependencies]
