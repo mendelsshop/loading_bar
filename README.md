@@ -31,7 +31,7 @@ bar = LoadingBar::new(100, Some(Color::Green)); // this creates a new loading ba
 ``` 
 ### Note the following examples assume that you have imported the [`loading_bar`](https://github.com/mendelsshop/loading_bar) crate.
 
-## You can incremt the progress of the loading bar with the following code:
+## You can increment the progress of the loading bar with the following code:
 
 ```rust
 bar.advance(); // this increments the loading bar by 1 step
