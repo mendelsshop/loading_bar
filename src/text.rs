@@ -1,11 +1,19 @@
-use crate::{Color, LoadingBar};
-
-use crossterm::{
-    cursor::{self, Hide, MoveDown, MoveUp, MoveLeft, MoveTo, MoveRight, Show, RestorePosition, SavePosition},
-    execute, ExecutableCommand, Result, style::Print,
-    terminal::{Clear, ClearType},
+use std::{
+    fmt::{self, Display},
+    io::stdout,
 };
 
+pub use crate::LoadingBar;
+pub use colored::Color;
+
+use colored::Colorize;
+
+use crossterm::{
+    cursor::MoveTo,
+    execute,
+    style::{Print},
+    terminal::{Clear, ClearType},
+};
 
 // we have 2 structs for the main (TextLoadingbar) struct, so its easier to manage the elements such as (TextItem) and what color they should be etc
 // for each of these structs we have to have a position, for crossterm::cursor to be able to use and
@@ -13,15 +21,7 @@ use crossterm::{
 #[derive(Debug)]
 struct TextItem {
     text: String,
-    color: Option<Color>,
-    top_pos: (u16, u16),
-    bottom_pos: (u16, u16),
-}
-
-#[derive(Debug)]
-struct LoadingBarItem {
-    bar: LoadingBar,
-    pos: (u16, u16),
+    color: Option<colored::Color>,
 }
 
 // in the main struct we have a two text items, one for above the bar and one for below the bar
@@ -31,8 +31,7 @@ struct LoadingBarItem {
 pub struct TextLoadingBar {
     top_text: TextItem,
     bottom_text: TextItem,
-    bar: LoadingBarItem,
-    largest_text_len: u16,
+    bar: LoadingBar,
 }
 
 impl TextLoadingBar {
@@ -46,54 +45,96 @@ impl TextLoadingBar {
             Option<colored::Color>, // bottom text color
         ),
     ) -> TextLoadingBar {
-        let top_text_pos = get_num_lines_witdh(&top_text);
-        let bottom_text_pos = get_num_lines_witdh(&bottom_text);
-        let largest = get_largest_line_width(top_text_pos.0, len, bottom_text_pos.0);
         let (top_text_color, bar_color, bottom_text_color) = color;
         TextLoadingBar {
             top_text: TextItem {
                 text: top_text,
                 color: top_text_color,
-                top_pos: (top_text_pos.0, 0),
-                bottom_pos: (top_text_pos.0, top_text_pos.1 - 1),
             },
-            bar: LoadingBarItem {
-                bar: LoadingBar::new(len, bar_color),
-                pos: (len, top_text_pos.1),
-            },
+            bar: LoadingBar::new(len, bar_color, (0, 0)),
             bottom_text: TextItem {
                 text: bottom_text,
                 color: bottom_text_color,
-                top_pos: (bottom_text_pos.0, top_text_pos.1 + 1),
-                bottom_pos: (bottom_text_pos.0, top_text_pos.1 + 1 + bottom_text_pos.1),
             },
-            largest_text_len: largest,
         }
+    }
+
+    fn goline_clear_print(&self) {
+        let (x, y) = self.bar.start_pos;
+        execute!(
+            stdout(),
+            MoveTo(x, y),
+            Clear(ClearType::CurrentLine),
+            Print(&self)
+        )
+        .unwrap();
+    }
+
+    pub fn change_top_text(&mut self, text: String) {
+        self.top_text.text = text;
+    }
+
+    pub fn change_bottom_text(&mut self, text: String) {
+        self.bottom_text.text = text;
+    }
+
+    pub fn change_top_text_color(&mut self, color: Option<Color>) {
+        self.top_text.color = color;
+    }
+
+    pub fn change_bottom_text_color(&mut self, color: Option<Color>) {
+        self.bottom_text.color = color;
+    }
+
+    pub fn change_bar_color(&mut self, color: Option<Color>) {
+        self.bar.color = color;
+    }
+
+    pub fn change_all_text_colors(&mut self, color: Option<Color>) {
+        self.top_text.color = color;
+        self.bottom_text.color = color;
+        self.bar.color = color;
+    }
+
+    pub fn advance(&mut self) {
+        self.bar.advance();
+    }
+
+    pub fn advance_print(&mut self) {
+        self.bar.advance();
+        self.goline_clear_print();
+    }
+
+    pub fn advance_by(&mut self, index: u16) {
+        self.bar.advance_by(index);
+    }
+
+    pub fn advance_by_print(&mut self, index: u16) {
+        self.bar.advance_by_print(index);
+    }
+
+    pub fn advance_by_percent(&mut self, percent: f32) {
+        self.bar.advance_by_percent(percent);
+    }
+
+    pub fn advance_by_percent_print(&mut self, percent: f32) {
+        self.bar.advance_by_percent_print(percent);
     }
 }
 
-// this function is used to get the number of lines and the width of the largest line
-fn get_num_lines_witdh(text: &str) -> (u16, u16) {
-    let mut num_lines = 1;
-    let mut width = 0;
-    for c in text.chars() {
-        if c == '\n' {
-            num_lines += 1;
-        } else {
-            width += 1;
-        }
+impl Display for TextLoadingBar {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{}\n{}\n{}\n",
+            self.top_text
+                .text
+                .color(self.top_text.color.unwrap_or(colored::Color::White)),
+            self.bar,
+            self.bottom_text
+                .text
+                .color(self.bottom_text.color.unwrap_or(colored::Color::White)) // if we have a color, use it, otherwise use white
+        )
     }
-    (width, num_lines)
 }
 
-// this function is used to get the largest line width of the text
-fn get_largest_line_width(top: u16, bar: u16, bottom: u16) -> u16 {
-    let mut largest = top;
-    if bar > largest {
-        largest = bar;
-    }
-    if bottom > largest {
-        largest = bottom;
-    }
-    largest
-}
