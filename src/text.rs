@@ -118,11 +118,11 @@ impl TextLoadingBar {
 
         let (x, y) = self.t_start_pos;
         let mut y_copy = y;
-        execute!(stdout(), SavePosition).expect("failed to save position");
+        execute!(stdout(), SavePosition).expect("\x07failed to save position\x07");
         for _ in 0..line_count {
-            execute!(stdout(), MoveTo(x, y_copy)).expect("failed to move cursor");
-            execute!(stdout(), Clear(ClearType::CurrentLine)).expect("failed to clear line");
-            execute!(stdout(), RestorePosition).expect("failed to restore cursor");
+            execute!(stdout(), MoveTo(x, y_copy)).expect("\x07failed to move cursor\x07");
+            execute!(stdout(), Clear(ClearType::CurrentLine)).expect("\x07failed to clear line\x07");
+            execute!(stdout(), RestorePosition).expect("\x07failed to restore cursor\x07");
             y_copy += 1;
         }
 
@@ -132,9 +132,9 @@ impl TextLoadingBar {
         y_copy = y;
         for i in 0..line_count {
             let texts = &text[i as usize];
-            execute!(stdout(), MoveTo(x, y_copy)).expect("failed to move cursor");
-            execute!(stdout(), Print(texts)).expect("failed to print");
-            execute!(stdout(), RestorePosition).expect("failed to restore cursor");
+            execute!(stdout(), MoveTo(x, y_copy)).expect("\x07failed to move cursor\x07");
+            execute!(stdout(), Print(texts)).expect("\x07failed to print\x07");
+            execute!(stdout(), RestorePosition).expect("\x07failed to restore cursor\x07");
             y_copy += 1;
         }
     }

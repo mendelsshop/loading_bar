@@ -151,7 +151,7 @@ impl LoadingBar {
         execute!(stdout(), MoveTo(x, y)).expect("\x07could not move cursor\x07");
         execute!(stdout(), Clear(ClearType::CurrentLine)).expect("\x07could not clear line\x07");
         execute!(stdout(), Print(&self)).expect("\x07could not print\x07");
-        execute!(stdout(), RestorePosition).expect("failed to restore cursor");
+        execute!(stdout(), RestorePosition).expect("\x07failed to restore cursor\x07");
     }
 }
 
