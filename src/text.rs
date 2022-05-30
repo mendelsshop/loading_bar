@@ -139,6 +139,10 @@ impl TextLoadingBar {
         }
     }
 
+    pub fn print(&self) {
+        self.goline_clear_print();
+    }
+
     pub fn change_top_text(&mut self, text: String) {
         self.top_text.text = text;
     }

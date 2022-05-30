@@ -153,6 +153,10 @@ impl LoadingBar {
         execute!(stdout(), Print(&self)).expect("\x07could not print\x07");
         execute!(stdout(), RestorePosition).expect("\x07failed to restore cursor\x07");
     }
+
+    pub fn print(&self) {
+        self.goline_clear_print();
+    }
 }
 
 impl fmt::Display for LoadingBar {
