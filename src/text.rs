@@ -11,7 +11,7 @@ use colored::Colorize;
 use crossterm::{
     cursor::MoveTo,
     execute,
-    style::{Print},
+    style::Print,
     terminal::{Clear, ClearType},
 };
 
@@ -137,4 +137,3 @@ impl Display for TextLoadingBar {
         )
     }
 }
-
