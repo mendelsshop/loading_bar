@@ -1,5 +1,5 @@
 # loading_bar
-[![crates.io](https://img.shields.io/crates/v/apkeep.svg)](https://crates.io/crates/loading_bar)
+[![crates.io](https://img.shields.io/crates/v/loading_bar.svg)](https://crates.io/crates/loading_bar)
 
 ## About:
 This my "Awesome" loading bar library.
