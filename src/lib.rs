@@ -1,8 +1,9 @@
 pub use colored::Color;
 use colored::Colorize;
+use crossterm::cursor::{RestorePosition, SavePosition};
 
 use std::fmt;
-use std::io::{self, stdout, Write};
+use std::io::stdout;
 
 pub mod text;
 
@@ -87,14 +88,7 @@ impl LoadingBar {
 
     pub fn advance_by_percent_print(&mut self, percentage: f32) {
         self.advance_by_percent(percentage);
-        let (x, y) = self.start_pos;
-        execute!(
-            stdout(),
-            MoveTo(x, y),
-            Clear(ClearType::CurrentLine),
-            Print(&self)
-        )
-        .unwrap();
+        self.goline_clear_print()
     }
 
     // TODO have similar functions for with hashmaps or vectors of colors
@@ -121,16 +115,7 @@ impl LoadingBar {
             half: false,
             start_pos,
         };
-        let (x, y) = start_pos;
-        execute!(
-            stdout(),
-            MoveTo(x, y),
-            Clear(ClearType::CurrentLine),
-            Print(&self_clone)
-        )
-        .unwrap();
-        // flush the buffer
-        io::stdout().flush().unwrap();
+        self_clone.advance_by_print(start);
         std::thread::spawn(move || {
             for _ in 0..(self_clone.space_left) {
                 self_clone.advance_print();
@@ -144,15 +129,8 @@ impl LoadingBar {
     }
 
     pub fn change_color_print(self: &mut LoadingBar, color: Option<colored::Color>) {
-        let (x, y) = self.start_pos;
         self.change_color(color);
-        execute!(
-            stdout(),
-            MoveTo(x, y),
-            Clear(ClearType::CurrentLine),
-            Print(&self)
-        )
-        .unwrap();
+        self.goline_clear_print()
     }
 
     fn adv_index(&mut self, adv_val: u16) {
@@ -162,7 +140,6 @@ impl LoadingBar {
             self.space_left = self.len - self.index;
             if self.space_left == 0 {
                 self.done = true;
-                execute!(stdout(),).unwrap();
             }
         } else {
             panic!("\x07 You can't advance more than the length of the bar\x07");
@@ -171,15 +148,16 @@ impl LoadingBar {
 
     fn adv_index_print(&mut self, add_val: u16) {
         self.adv_index(add_val);
+        self.goline_clear_print();
+    }
+
+    fn goline_clear_print(&self) {
         let (x, y) = self.start_pos;
-        execute!(
-            stdout(),
-            MoveTo(x, y),
-            Clear(ClearType::CurrentLine),
-            Print(&self)
-        )
-        .unwrap();
-        io::stdout().flush().unwrap();
+        execute!(stdout(), SavePosition).expect("\x07could not save cursor position\x07");
+        execute!(stdout(), MoveTo(x, y)).expect("\x07could not move cursor\x07");
+        execute!(stdout(), Clear(ClearType::CurrentLine)).expect("\x07could not clear line\x07");
+        execute!(stdout(), Print(&self)).expect("\x07could not print\x07");
+        execute!(stdout(), RestorePosition).expect("failed to restore cursor");
     }
 }
 
