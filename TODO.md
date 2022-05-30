@@ -1,0 +1,4 @@
+- more auto run functons that can have lists of colors and or texts to cycle through, that can stop at a certain point, that can take in a LoadingBar instead of creating a new one, etc
+- put on docs.rs and crate.rs with proper documentation
+- figure out how to manage auto run functions from outside the auto run function (because of how threading works)
+- add functions to change different thinsg like the color, the text, postion, and differnet combinations of the above (and there respective functions with prrinting)

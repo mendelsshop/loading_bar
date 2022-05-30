@@ -14,10 +14,6 @@ use crossterm::{
     terminal::{Clear, ClearType},
 };
 
-// TODO: make a display function for the struct
-// for now, I'll just reprint the struct each time it gets updated
-// this might not work for text::TextLoadingBar and we might have to switch this to not print the struct each time it is changed or make additional functions that update the struct without printing it
-
 #[derive(Debug, Clone)]
 pub struct LoadingBar {
     pub len: u16,
@@ -91,8 +87,6 @@ impl LoadingBar {
         self.goline_clear_print()
     }
 
-    // TODO have similar functions for with hashmaps or vectors of colors
-    // and or text (and each peice's of txt postion top/bottom) for different percentages
     pub fn auto_run(
         time_in_seconds: u16,
         len: u16,
