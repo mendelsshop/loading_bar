@@ -1,6 +1,6 @@
 # loading_bar
 [![crates.io](https://img.shields.io/crates/v/loading_bar.svg)](https://crates.io/crates/loading_bar)
-[![docs.rc](https://img.shields.io/docsrs/loading_bar)](https://docs.rs/loading_bar/latest/loading_bar)
+[![docs.rs](https://img.shields.io/docsrs/loading_bar)](https://docs.rs/loading_bar/latest/loading_bar)
 
 ## About:
 This my "Awesome" loading bar library.
@@ -10,7 +10,7 @@ The loading bar is a simple progress bar that can be used to show the progress o
 And different ways to advance the loading bar.
 <br>
 ## Documentation:
-[docs.rc](https://docs.rs/loading_bar/latest/loading_bar)
+[docs.rs](https://docs.rs/loading_bar/latest/loading_bar)
 <br>
 [LoadingBar](https://github.com/mendelsshop/loading_bar#LoadingBar),
 [TextLoadingBar](https://github.com/mendelsshop/loading_bar#TextLoadingBar) 
