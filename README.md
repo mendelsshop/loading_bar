@@ -12,7 +12,7 @@ And different ways to advance the loading bar.
 ## Documentation:
 [docs.rc](https://docs.rs/loading_bar/latest/loading_bar)
 <br>
-[LoadingBar](https://github.com/mendelsshop/loading_bar#LoadingBar) 
+[LoadingBar](https://github.com/mendelsshop/loading_bar#LoadingBar),
 [TextLoadingBar](https://github.com/mendelsshop/loading_bar#TextLoadingBar) 
 
 
