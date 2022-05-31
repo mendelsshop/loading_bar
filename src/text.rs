@@ -121,7 +121,7 @@ impl TextLoadingBar {
         execute!(stdout(), SavePosition).expect("\x07failed to save position\x07");
         for _ in 0..line_count {
             execute!(stdout(), MoveTo(x, y_copy)).expect("\x07failed to move cursor\x07");
-            execute!(stdout(), Clear(ClearType::CurrentLine)).expect("\x07failed to clear line\x07");
+            execute!(stdout(), Clear(ClearType::UntilNewLine)).expect("\x07failed to clear\x07");
             execute!(stdout(), RestorePosition).expect("\x07failed to restore cursor\x07");
             y_copy += 1;
         }

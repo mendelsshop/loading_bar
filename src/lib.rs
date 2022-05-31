@@ -94,7 +94,7 @@ impl LoadingBar {
         color: Option<colored::Color>,
         start_pos: (u16, u16),
     ) {
-        if start > len {
+        if start >= len {
             println!();
             panic!("\x07start must be less than len\x07");
         }
@@ -149,7 +149,7 @@ impl LoadingBar {
         let (x, y) = self.start_pos;
         execute!(stdout(), SavePosition).expect("\x07could not save cursor position\x07");
         execute!(stdout(), MoveTo(x, y)).expect("\x07could not move cursor\x07");
-        execute!(stdout(), Clear(ClearType::CurrentLine)).expect("\x07could not clear line\x07");
+        execute!(stdout(), Clear(ClearType::UntilNewLine)).expect("\x07could not clear line\x07");
         execute!(stdout(), Print(&self)).expect("\x07could not print\x07");
         execute!(stdout(), RestorePosition).expect("\x07failed to restore cursor\x07");
     }

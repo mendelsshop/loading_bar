@@ -2,3 +2,4 @@
 - put on docs.rs and crate.rs with proper documentation
 - figure out how to manage auto run functions from outside the auto run function (because of how threading works)
 - add functions to change different thinsg like the color, the text, postion, and differnet combinations of the above (and there respective functions with prrinting)
+- change panics to Result type so that they can be handled by the user
