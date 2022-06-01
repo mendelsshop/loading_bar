@@ -89,3 +89,4 @@ LoadingBar::auto_run(10, 50, 10, None, (0, 0)); // as above but with the default
 # Credits:
 - [`Mendel's Shop`](https://github.com/mendelsshop.com) - (Me) for creating it.
 
+- [`Ryan`](https://github.com/BeaconBrigade) - For all the bugs any typos they caught and suggestions they had.
