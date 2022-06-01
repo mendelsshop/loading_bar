@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     fmt::{self, Display},
     io::stdout,
 };
@@ -13,6 +14,52 @@ use crossterm::{
     style::Print,
     terminal::{Clear, ClearType},
 };
+
+pub enum TextLoadingBarOptions {
+    Text(String),
+    Color(Option<Color>),
+    Number(u16),
+    Float(f32),
+    Pos(u16, u16),
+    None,
+}
+
+impl TextLoadingBarOptions {
+    fn get_text(&self) -> &str {
+        match self {
+            TextLoadingBarOptions::Text(text) => text,
+            _ => "",
+        }
+    }
+
+    fn get_color(&self) -> Option<Color> {
+        match self {
+            TextLoadingBarOptions::Color(color) => color.clone(),
+            _ => None,
+        }
+    }
+
+    fn get_number(&self) -> u16 {
+        match self {
+            TextLoadingBarOptions::Number(number) => *number,
+            _ => 0,
+        }
+    }
+
+    fn get_float(&self) -> f32 {
+        match self {
+            TextLoadingBarOptions::Float(float) => *float,
+            _ => 0.0,
+        }
+    }
+
+    fn get_pos(&self) -> (u16, u16) {
+        match self {
+            TextLoadingBarOptions::Pos(x, y) => (*x, *y),
+            _ => (0, 0),
+        }
+    }
+}
 
 // we have 2 structs for the main (TextLoadingbar) struct, so its easier to manage the elements such as (TextItem) and what color they should be etc
 // for each of these structs we have to have a position, for crossterm::cursor to be able to use and
@@ -90,7 +137,7 @@ impl TextLoadingBar {
         ),
         t_start_pos: (u16, u16),
     ) {
-        if start > len {
+        if start >= len {
             println!();
             panic!("\x07start must be less than len\x07");
         }
@@ -103,10 +150,10 @@ impl TextLoadingBar {
             (top_text_color, bar_color, bottom_text_color),
             t_start_pos,
         );
-        self_clone.adnvance_by_print(start);
+        self_clone.advance_by_print(start);
         std::thread::spawn(move || {
             for _ in 0..(self_clone.t_bar.space_left) {
-                self_clone.adnvance_print();
+                self_clone.advance_print();
                 std::thread::sleep(std::time::Duration::from_secs_f32(index));
             }
         });
@@ -142,6 +189,28 @@ impl TextLoadingBar {
         self.goline_clear_print();
     }
 
+    pub fn change_pos(&mut self, t_start_pos: (u16, u16)) {
+        // first we have to clear the text
+        let line_count = get_num_lines_witdh(&self.to_string());
+
+        let (x, y) = self.t_start_pos;
+        let mut y_copy = y;
+        execute!(stdout(), SavePosition).expect("\x07failed to save position\x07");
+        for _ in 0..line_count {
+            execute!(stdout(), MoveTo(x, y_copy)).expect("\x07failed to move cursor\x07");
+            execute!(stdout(), Clear(ClearType::UntilNewLine)).expect("\x07failed to clear\x07");
+            execute!(stdout(), RestorePosition).expect("\x07failed to restore cursor\x07");
+            y_copy += 1;
+        }
+
+        self.t_start_pos = t_start_pos;
+    }
+
+    pub fn change_pos_print(&mut self, t_start_pos: (u16, u16)) {
+        self.change_pos(t_start_pos);
+        self.print();
+    }
+
     pub fn change_top_text(&mut self, text: String) {
         self.top_text.text = text;
     }
@@ -168,31 +237,75 @@ impl TextLoadingBar {
         self.t_bar.color = color;
     }
 
-    pub fn adnvance(&mut self) {
+    pub fn advance(&mut self) {
         self.t_bar.advance();
     }
 
-    pub fn adnvance_print(&mut self) {
-        self.adnvance();
+    pub fn advance_print(&mut self) {
+        self.advance();
         self.goline_clear_print();
     }
 
-    pub fn adnvance_by(&mut self, index: u16) {
+    pub fn advance_by(&mut self, index: u16) {
         self.t_bar.advance_by(index);
     }
 
-    pub fn adnvance_by_print(&mut self, index: u16) {
-        self.adnvance_by(index);
+    pub fn advance_by_print(&mut self, index: u16) {
+        self.advance_by(index);
         self.goline_clear_print();
     }
 
-    pub fn adnvance_by_percent(&mut self, percent: f32) {
+    pub fn advance_by_percent(&mut self, percent: f32) {
         self.t_bar.advance_by_percent(percent);
     }
 
-    pub fn adnvance_by_percent_print(&mut self, percent: f32) {
-        self.adnvance_by_percent(percent);
+    pub fn advance_by_percent_print(&mut self, percent: f32) {
+        self.advance_by_percent(percent);
         self.goline_clear_print();
+    }
+
+    // func change this function takes a hashmap
+    pub fn change(&mut self, map: HashMap<&str, TextLoadingBarOptions>, print: bool) {
+        for (key, value) in map {
+            match key {
+                "top_text" => {
+                    self.change_top_text(value.get_text().to_string());
+                }
+                "bottom_text" => {
+                    self.change_bottom_text(value.get_text().to_string());
+                }
+                "top_text_color" => {
+                    self.change_top_text_color(value.get_color());
+                }
+                "bottom_text_color" => {
+                    self.change_bottom_text_color(value.get_color());
+                }
+                "bar_color" => {
+                    self.change_bar_color(value.get_color());
+                }
+                "all_text_colors" => {
+                    self.change_all_text_colors(value.get_color());
+                }
+                "advance" => {
+                    self.advance();
+                }
+                "advance_by" => {
+                    self.advance_by(value.get_number());
+                }
+                "advance_by_percent" => {
+                    self.advance_by_percent(value.get_float());
+                }
+                "change_pos" => {
+                    self.change_pos(value.get_pos());
+                }
+                _ => {
+                    println!("\x07{}\x07 is not a valid key", key);
+                }
+            }
+        }
+        if print {
+            self.print();
+        }
     }
 }
 

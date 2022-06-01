@@ -2,6 +2,7 @@ pub use colored::Color;
 use colored::Colorize;
 use crossterm::cursor::{RestorePosition, SavePosition};
 
+use std::collections::HashMap;
 use std::fmt;
 use std::io::stdout;
 
@@ -13,6 +14,44 @@ use crossterm::{
     style::Print,
     terminal::{Clear, ClearType},
 };
+
+pub enum LoadingBarOptions {
+    Color(Option<Color>),
+    Number(u16),
+    Float(f32),
+    Pos(u16, u16),
+    None,
+}
+
+impl LoadingBarOptions {
+    fn get_color(&self) -> Option<Color> {
+        match self {
+            LoadingBarOptions::Color(color) => color.clone(),
+            _ => None,
+        }
+    }
+
+    fn get_number(&self) -> u16 {
+        match self {
+            LoadingBarOptions::Number(number) => *number,
+            _ => 0,
+        }
+    }
+
+    fn get_float(&self) -> f32 {
+        match self {
+            LoadingBarOptions::Float(float) => *float,
+            _ => 0.0,
+        }
+    }
+
+    fn get_pos(&self) -> (u16, u16) {
+        match self {
+            LoadingBarOptions::Pos(x, y) => (*x, *y),
+            _ => (0, 0),
+        }
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct LoadingBar {
@@ -35,6 +74,21 @@ impl LoadingBar {
             half: false,
             start_pos,
         }
+    }
+
+    pub fn change_pos(&mut self, pos: (u16, u16)) {
+        // clear the old bar
+        let (x, y) = self.start_pos;
+        execute!(stdout(), SavePosition).expect("\x07could not save cursor position\x07");
+        execute!(stdout(), MoveTo(x, y)).expect("\x07could not move cursor\x07");
+        execute!(stdout(), Clear(ClearType::UntilNewLine)).expect("\x07could not clear line\x07");
+        execute!(stdout(), RestorePosition).expect("\x07could not restore cursor position\x07");
+        self.start_pos = pos;
+    }
+
+    pub fn change_pos_print(&mut self, pos: (u16, u16)) {
+        self.change_pos(pos);
+        self.print();
     }
 
     pub fn advance(self: &mut LoadingBar) {
@@ -109,7 +163,7 @@ impl LoadingBar {
             half: false,
             start_pos,
         };
-        self_clone.advance_by_print(start);
+        self_clone.print();
         std::thread::spawn(move || {
             for _ in 0..(self_clone.space_left) {
                 self_clone.advance_print();
@@ -137,6 +191,34 @@ impl LoadingBar {
             }
         } else {
             panic!("\x07 You can't advance more than the length of the bar\x07");
+        }
+    }
+
+    pub fn change(&mut self, map: HashMap<&str, LoadingBarOptions>, print: bool) {
+        for (key, value) in map {
+            match key {
+                "color" => {
+                    self.color = value.get_color();
+                }
+                "pos" => {
+                    self.change_pos(value.get_pos());
+                }
+                "advance" => {
+                    self.advance();
+                }
+                "advance_by" => {
+                    self.advance_by(value.get_number());
+                }
+                "advance_by_percent" => {
+                    self.advance_by_percent(value.get_float());
+                }
+                _ => {
+                    panic!("\x07{} is not a valid option\x07", key);
+                }
+            }
+        }
+        if print {
+            self.print()
         }
     }
 
