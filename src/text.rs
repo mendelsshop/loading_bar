@@ -3,8 +3,7 @@ use std::{
     io::stdout,
 };
 
-pub use crate::LoadingBar;
-pub use colored::Color;
+pub use crate::{Color, LoadingBar};
 
 use colored::Colorize;
 

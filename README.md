@@ -85,3 +85,7 @@ LoadingBar::auto_run(10, 50, 10, None, (0, 0)); // as above but with the default
 - color documentation and source can be found at https://docs.rs/colored/2.0.0/colored/enum.Color.html.
 
 - This uses the [`crossterm`](https://docs.rs/crossterm/latest/crossterm/) crate, so when using this crate you should understand how to use the aforementioned crate (and possibly import and use it for resseting the lines).
+
+# Credits:
+- [`Mendel's Shop`](https://github.com/mendelsshop.com) - (Me) for creating it.
+
