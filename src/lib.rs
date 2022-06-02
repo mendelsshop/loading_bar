@@ -172,6 +172,20 @@ impl LoadingBar {
         });
     }
 
+    pub fn auto_run_from(
+        mut loading_bar: LoadingBar,
+        time_in_seconds: u16,
+    ) {
+        let index = time_in_seconds as f32 / (loading_bar.space_left + 1) as f32;
+        loading_bar.print();
+        std::thread::spawn(move || {
+            for _ in 0..(loading_bar.space_left) {
+                loading_bar.advance_print();
+                std::thread::sleep(std::time::Duration::from_secs_f32(index));
+            }
+        });
+    }
+
     pub fn change_color(self: &mut LoadingBar, color: Option<colored::Color>) {
         self.color = color;
     }

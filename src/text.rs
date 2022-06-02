@@ -159,6 +159,23 @@ impl TextLoadingBar {
         });
     }
 
+    pub fn auto_run_from(
+        mut text_loading_bar: TextLoadingBar,
+        time_in_seconds: u16,
+
+    ) {
+        let index = time_in_seconds as f32 / (text_loading_bar.t_bar.space_left + 1) as f32;
+
+        text_loading_bar.print();
+        std::thread::spawn(move || {
+            for _ in 0..(text_loading_bar.t_bar.space_left) {
+                text_loading_bar.advance_print();
+                std::thread::sleep(std::time::Duration::from_secs_f32(index));
+            }
+        });
+    }
+    
+
     fn goline_clear_print(&self) {
         let line_count = get_num_lines_witdh(&self.to_string());
 
@@ -299,7 +316,7 @@ impl TextLoadingBar {
                     self.change_pos(value.get_pos());
                 }
                 _ => {
-                    println!("\x07{}\x07 is not a valid key", key);
+                    panic!("\x07{}\x07 is not a valid key", key);
                 }
             }
         }

@@ -79,6 +79,12 @@ LoadingBar::auto_run(10, 50, 10, Some(Color::Red), (0, 0)); // this creates a ne
 LoadingBar::auto_run(10, 50, 10, None, (0, 0)); // as above but with the default color
 ```
 
+## We can have a loading bar that is already instaciated and then passed to a function that will increment it automatically like an auto run function:
+```rust
+let mut bar = LoadingBar::new(10, Some(Color::Red), (0, 0)); // this creates a new loading bar with 10 steps and the red color
+bar.auto_run_from(bar, 10); // this takes ownership of the bar and increments automatically to the end in a duration of 10 seconds
+```
+
 # TextLoadingBar
 
 # Notes:
