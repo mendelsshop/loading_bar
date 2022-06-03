@@ -15,6 +15,54 @@ use crossterm::{
     terminal::{Clear, ClearType},
 };
 
+pub struct TextLoadingBarAutoOptions {
+    pub top_text: Vec<String>,
+    pub bottom_text: Vec<String>,
+    pub top: Vec<Option<Color>>,
+    pub bottom: Vec<Option<Color>>,
+    pub bar: Vec<Option<Color>>,
+}
+
+
+enum TextLoadingBarAutoOptionsType {
+    TopText,
+    BottomText,
+    Top,
+    Bottom,
+    Bar,
+}
+
+impl Display for TextLoadingBarAutoOptionsType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            TextLoadingBarAutoOptionsType::TopText => write!(f, "top_text"),
+            TextLoadingBarAutoOptionsType::BottomText => write!(f, "bottom_text"),
+            TextLoadingBarAutoOptionsType::Top => write!(f, "top"),
+            TextLoadingBarAutoOptionsType::Bottom => write!(f, "bottom"),
+            TextLoadingBarAutoOptionsType::Bar => write!(f, "bar"),
+        }
+    }
+}
+
+impl TextLoadingBarAutoOptions {
+    pub fn get_len(&self) ->  (u16, u16, u16, u16, u16) {
+        let mut times = (TextLoadingBarAutoOptions::check(self.top_text.len(), TextLoadingBarAutoOptionsType::TopText),
+                         TextLoadingBarAutoOptions::check(self.bottom_text.len(), TextLoadingBarAutoOptionsType::BottomText),
+                         TextLoadingBarAutoOptions::check(self.top.len(), TextLoadingBarAutoOptionsType::Top),
+                         TextLoadingBarAutoOptions::check(self.bottom.len(), TextLoadingBarAutoOptionsType::Bottom),
+                         TextLoadingBarAutoOptions::check(self.bar.len(), TextLoadingBarAutoOptionsType::Bar));
+        times  
+        }
+    fn check(num: usize, types: TextLoadingBarAutoOptionsType) -> u16 {
+        if num == 0 {
+            panic!("{} is 0", types);
+        } else {
+            num as u16
+        }
+    }
+}
+
+
 pub enum TextLoadingBarOptions {
     Text(String),
     Color(Option<Color>),
@@ -141,7 +189,6 @@ impl TextLoadingBar {
             println!();
             panic!("\x07start must be less than len\x07");
         }
-        let index = time_in_seconds as f32 / (len - start) as f32;
         let (top_text_color, bar_color, bottom_text_color) = color;
         let mut self_clone = TextLoadingBar::new(
             top_text,
@@ -150,22 +197,31 @@ impl TextLoadingBar {
             (top_text_color, bar_color, bottom_text_color),
             t_start_pos,
         );
-        self_clone.advance_by_print(start);
-        std::thread::spawn(move || {
-            for _ in 0..(self_clone.t_bar.space_left) {
-                self_clone.advance_print();
-                std::thread::sleep(std::time::Duration::from_secs_f32(index));
-            }
-        });
+        TextLoadingBar::auto_run_from(self_clone, time_in_seconds)
     }
 
-    pub fn auto_run_from(
-        mut text_loading_bar: TextLoadingBar,
-        time_in_seconds: u16,
+    pub fn auto_run_change(option: TextLoadingBarAutoOptions, time_in_seconds: u16, len: u16, start: u16) {
+        if start >= len {
+            println!();
+            panic!("\x07start must be less than len\x07");
+        }
+        let mut self_clone = TextLoadingBar::new(
+            option.top_text[0].clone(),
+            option.bottom_text[0].clone(),
+            len,
+            (
+                option.top[0].clone(),
+                option.bar[0].clone(),
+                option.bottom[0].clone(),
+            ),
+            (0, 0),
+        );
+        TextLoadingBar::auto_run_from_change(self_clone, option, time_in_seconds)
+    }
 
-    ) {
+    pub fn auto_run_from(mut text_loading_bar: TextLoadingBar, time_in_seconds: u16) {
         let index = time_in_seconds as f32 / (text_loading_bar.t_bar.space_left + 1) as f32;
-
+        
         text_loading_bar.print();
         std::thread::spawn(move || {
             for _ in 0..(text_loading_bar.t_bar.space_left) {
@@ -174,7 +230,45 @@ impl TextLoadingBar {
             }
         });
     }
-    
+
+    pub fn auto_run_from_change(mut text_loading_bar: TextLoadingBar, option: TextLoadingBarAutoOptions, time_in_seconds: u16) {
+        let index = time_in_seconds as f32 / (text_loading_bar.t_bar.space_left + 1) as f32;
+        // / get the length of each vector from the option struct
+        let (top_len, bottom_len, bar_color_len, top_color_len, bottom_color_len) = option.get_len();
+        // find the the bar index(s) for each variable we just took from the option struct
+        println!("{}\n{}", text_loading_bar.t_bar.space_left, time_in_seconds);
+        // text_loading_bar.t_bar.space_left = index as u16;
+        let total = text_loading_bar.t_bar.len - (text_loading_bar.t_bar.space_left + 1);
+        let bottom_color = get_indexes(bottom_color_len, text_loading_bar.t_bar.space_left + 1, text_loading_bar.t_bar.len);
+        let top_color = get_indexes(top_color_len, text_loading_bar.t_bar.space_left + 1, text_loading_bar.t_bar.len);
+        let top = get_indexes(top_len, text_loading_bar.t_bar.space_left + 1, text_loading_bar.t_bar.len);
+        let bottom = get_indexes(bottom_len, text_loading_bar.t_bar.space_left + 1, text_loading_bar.t_bar.len);
+        let bar_color = get_indexes(bar_color_len, text_loading_bar.t_bar.space_left + 1, text_loading_bar.t_bar.len);
+        
+        // text_loading_bar.print();
+        std::thread::spawn(move || {
+            for i in 0..(text_loading_bar.t_bar.space_left) {
+                println!("\n\n\n{}", text_loading_bar.t_bar.space_left);
+                if bar_color.contains_key(&total) {
+                    text_loading_bar.t_bar.color = option.bar[1].clone();
+                }
+                if top_color.contains_key(&total) {
+                    text_loading_bar.top_text.color = option.top[1].clone();
+                }
+                if bottom_color.contains_key(&total){
+                    text_loading_bar.bottom_text.color = option.bottom[1].clone();
+                }
+                if top.contains_key(&total) {
+                    text_loading_bar.top_text.text = option.top_text[1].clone();
+                }
+                if bottom.contains_key(&total) {
+                    text_loading_bar.bottom_text.text = option.bottom_text[1].clone();
+                }
+                text_loading_bar.advance();
+                std::thread::sleep(std::time::Duration::from_secs_f32(index));
+            }
+        });
+    }
 
     fn goline_clear_print(&self) {
         let line_count = get_num_lines_witdh(&self.to_string());
@@ -334,4 +428,19 @@ fn get_num_lines_witdh(text: &str) -> u16 {
         }
     }
     num_lines
+}
+
+fn get_indexes(num: u16, left: u16, len: u16) -> HashMap<u16, u16> {
+    let mut indexes = HashMap::new();
+    print!("{} ", left);
+    print!("{}", len);
+    // get the indexes based on left
+    let done = len - left;
+    let index = left/num;
+    print!("{}", index);
+    for i in 1..num {
+        indexes.insert(done + (index*i), i);
+        print!("{} ", indexes[&(&done + (index*i))]);
+    }
+    indexes
 }

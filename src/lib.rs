@@ -153,7 +153,6 @@ impl LoadingBar {
             panic!("\x07start must be less than len\x07");
         }
         // find the amount of time that has per incremen
-        let index = time_in_seconds as f32 / (len - start) as f32;
         let mut self_clone = LoadingBar {
             len,
             index: start,
@@ -163,19 +162,11 @@ impl LoadingBar {
             half: false,
             start_pos,
         };
-        self_clone.print();
-        std::thread::spawn(move || {
-            for _ in 0..(self_clone.space_left) {
-                self_clone.advance_print();
-                std::thread::sleep(std::time::Duration::from_secs_f32(index));
-            }
-        });
+        LoadingBar::auto_run_from(self_clone, time_in_seconds)
+ 
     }
 
-    pub fn auto_run_from(
-        mut loading_bar: LoadingBar,
-        time_in_seconds: u16,
-    ) {
+    pub fn auto_run_from(mut loading_bar: LoadingBar, time_in_seconds: u16) {
         let index = time_in_seconds as f32 / (loading_bar.space_left + 1) as f32;
         loading_bar.print();
         std::thread::spawn(move || {
