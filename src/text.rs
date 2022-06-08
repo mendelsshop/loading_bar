@@ -259,27 +259,27 @@ impl TextLoadingBar {
             option.get_len();
         // find the the bar index(s) for each variable we just took from the option struct
         let mut total = text_loading_bar.t_bar.len - (text_loading_bar.t_bar.space_left);
-        let bottom_color = get_indexes(
+        let bottom_color = crate::get_indexes(
             bottom_color_len,
             text_loading_bar.t_bar.space_left + 1,
             text_loading_bar.t_bar.len,
         );
-        let top_color = get_indexes(
+        let top_color = crate::get_indexes(
             top_color_len,
             text_loading_bar.t_bar.space_left + 1,
             text_loading_bar.t_bar.len,
         );
-        let top = get_indexes(
+        let top = crate::get_indexes(
             top_len,
             text_loading_bar.t_bar.space_left + 1,
             text_loading_bar.t_bar.len,
         );
-        let bottom = get_indexes(
+        let bottom = crate::get_indexes(
             bottom_len,
             text_loading_bar.t_bar.space_left + 1,
             text_loading_bar.t_bar.len,
         );
-        let bar_color = get_indexes(
+        let bar_color = crate::get_indexes(
             bar_color_len,
             text_loading_bar.t_bar.space_left + 1,
             text_loading_bar.t_bar.len,
@@ -290,24 +290,26 @@ impl TextLoadingBar {
             for _ in 0..(text_loading_bar.t_bar.space_left) {
                 total += 1;
                 if bar_color.contains_key(&total) {
-                    text_loading_bar.t_bar.color = option.bar[bar_cc].clone();
                     bar_cc += 1;
+                    text_loading_bar.t_bar.color = option.bar[bar_cc].clone();
                 }
                 if top_color.contains_key(&total) {
-                    text_loading_bar.top_text.color = option.top[top_cc].clone();
                     top_cc += 1;
+                    text_loading_bar.top_text.color = option.top[top_cc].clone();
                 }
                 if bottom_color.contains_key(&total) {
-                    text_loading_bar.bottom_text.color = option.bottom[bottom_cc].clone();
                     bottom_cc += 1;
+                    text_loading_bar.bottom_text.color = option.bottom[bottom_cc].clone();
                 }
                 if top.contains_key(&total) {
-                    text_loading_bar.top_text.text = option.top_text[top_tc].clone();
                     top_tc += 1;
+                    text_loading_bar.top_text.text =
+                        format!("{} {:?}", option.top_text[top_tc].clone(), top);
                 }
                 if bottom.contains_key(&total) {
+                    text_loading_bar.bottom_text.text =
+                        format!("{} {:?}", option.bottom_text[bottom_tc].clone(), bottom);
                     bottom_tc += 1;
-                    text_loading_bar.bottom_text.text = option.bottom_text[bottom_tc - 1].clone();
                 }
                 text_loading_bar.advance();
                 std::thread::sleep(std::time::Duration::from_secs_f32(index));
@@ -474,15 +476,4 @@ fn get_num_lines_witdh(text: &str) -> u16 {
         }
     }
     num_lines
-}
-
-fn get_indexes(num: u16, left: u16, len: u16) -> HashMap<u16, u16> {
-    let mut indexes = HashMap::new();
-    // get the indexes based on left
-    let done = len - left;
-    let index = left / num;
-    for i in 1..num + 1 {
-        indexes.insert(done + (index * i), i);
-    }
-    indexes
 }

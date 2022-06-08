@@ -264,3 +264,14 @@ impl fmt::Display for LoadingBar {
         )
     }
 }
+
+fn get_indexes(num: u16, left: u16, len: u16) -> HashMap<u16, u16> {
+    let mut indexes = HashMap::new();
+    // get the indexes based on left
+    let done = len - left;
+    let index = left / num;
+    for i in 1..num {
+        indexes.insert(done + (index * i), i);
+    }
+    indexes
+}
