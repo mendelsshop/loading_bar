@@ -2,3 +2,4 @@
 - make proper documentation on docs.rs and in the README.md
 - figure out how to manage auto run functions from outside the auto run function (because of how threading works)
 - change panics to Result type so that they can be handled by the user
+- make a LoadingBar type struct that doesn't use crossterm for user simplicity 
