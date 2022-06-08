@@ -86,7 +86,7 @@ bar.auto_run_from(bar, 10); // this takes ownership of the bar and increments au
 ```
 
 # TextLoadingBar
-
+Not documented yet.
 # Notes:
 - color documentation and source can be found at https://docs.rs/colored/2.0.0/colored/enum.Color.html.
 
