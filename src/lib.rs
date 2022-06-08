@@ -153,7 +153,7 @@ impl LoadingBar {
             panic!("\x07start must be less than len\x07");
         }
         // find the amount of time that has per incremen
-        let mut self_clone = LoadingBar {
+        let self_clone = LoadingBar {
             len,
             index: start,
             done: false,
@@ -163,7 +163,6 @@ impl LoadingBar {
             start_pos,
         };
         LoadingBar::auto_run_from(self_clone, time_in_seconds)
- 
     }
 
     pub fn auto_run_from(mut loading_bar: LoadingBar, time_in_seconds: u16) {
