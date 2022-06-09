@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::fmt;
 use std::io::stdout;
 
-pub mod text;
+pub mod text_loading_bar;
 
 use crossterm::{
     cursor::MoveTo,
