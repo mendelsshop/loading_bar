@@ -7,6 +7,7 @@ use std::fmt;
 use std::io::stdout;
 
 pub mod text_loading_bar;
+pub use auto_run::Types;
 
 use crossterm::{
     cursor::MoveTo,
@@ -240,8 +241,32 @@ fn get_indexes(num: u16, left: u16, len: u16) -> HashMap<u16, u16> {
     }
     indexes
 }
+
+// TODO: make this function work with auto_run_from_change instead of using get_index
+fn get_index_and_value(
+    num: u16,
+    left: u16,
+    len: u16,
+    value: Vec<Option<Color>>,
+) -> HashMap<u16, Option<Color>> {
+    let mut indexes = HashMap::new();
+    // get the indexes based on left
+    let done = len - left;
+    let index = left / num;
+    for i in 0..num {
+        indexes.insert(done + (index * i), value[i as usize]);
+    }
+    indexes
+}
 mod auto_run {
     use crate::{Color, LoadingBar};
+    use std::{collections::HashMap, fmt};
+    #[derive(PartialEq)]
+    pub enum Types {
+        Percent,
+        Index,
+    }
+
     impl LoadingBar {
         pub fn auto_run(
             time_in_seconds: u16,
@@ -294,31 +319,66 @@ mod auto_run {
             });
         }
         pub fn auto_run_from_change(
-            mut loading_bar: LoadingBar,
+            loading_bar: LoadingBar,
             change: Vec<Option<Color>>,
             time_in_seconds: u16,
         ) {
+            let change_len = change.len() as u16;
+            crate::get_indexes(change_len, loading_bar.space_left + 1, loading_bar.len);
+            let change_color = crate::get_index_and_value(
+                change_len,
+                loading_bar.space_left + 1,
+                loading_bar.len,
+                change,
+            );
+            LoadingBar::auto_run_from_change_points(
+                loading_bar,
+                change_color,
+                time_in_seconds,
+                Types::Index,
+            )
+        }
+
+        // TODO: make a similar function in TextLoadingBar and each one respective non from function
+        pub fn auto_run_from_change_points<U>(
+            mut loading_bar: LoadingBar,
+            change: HashMap<U, Option<Color>>,
+            time_in_seconds: u16,
+            type_change: Types,
+        ) where
+            U: Copy + fmt::Debug,
+            u16: From<U>,
+            f32: From<U>,
+        {
             let index = time_in_seconds as f32 / (loading_bar.space_left + 1) as f32;
             let mut total = loading_bar.len - (loading_bar.space_left);
-            let change_len = change.len() as u16;
-            let change_color =
-                crate::get_indexes(change_len, loading_bar.space_left + 1, loading_bar.len);
+            let mut change_color = HashMap::new();
 
-            let mut bar_cc = 0;
-            loading_bar.print();
-            std::thread::spawn(move || {
-                for _ in 0..(loading_bar.space_left) {
-                    total += 1;
-                    if change_color.contains_key(&total) {
-                        bar_cc += 1;
-                        loading_bar.color = change[bar_cc].clone();
-                    }
-
-                    loading_bar.advance();
-                    std::thread::sleep(std::time::Duration::from_secs_f32(index));
-                    loading_bar.print()
+            if Types::Percent == type_change {
+                for (key, value) in change.iter() {
+                    let key: u16 = (loading_bar.len as f32 * f32::from(*key) / 100.0) as u16;
+                    change_color.insert(key, value.clone());
                 }
-            });
+            } else {
+                for (key, value) in change.iter() {
+                    let change_key: u16 = u16::from(*key);
+                    change_color.insert(change_key, value.clone());
+                }
+
+                loading_bar.print();
+                std::thread::spawn(move || {
+                    for _ in 0..(loading_bar.space_left) {
+                        total += 1;
+                        if change_color.contains_key(&total) {
+                            loading_bar.color = change_color[&total].clone();
+                        }
+
+                        loading_bar.advance();
+                        std::thread::sleep(std::time::Duration::from_secs_f32(index));
+                        loading_bar.print()
+                    }
+                });
+            }
         }
     }
 }
