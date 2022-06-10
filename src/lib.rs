@@ -243,21 +243,35 @@ fn get_indexes(num: u16, left: u16, len: u16) -> HashMap<u16, u16> {
 }
 
 // TODO: make this function work with auto_run_from_change instead of using get_index
-fn get_index_and_value(
-    num: u16,
-    left: u16,
-    len: u16,
-    value: Vec<Option<Color>>,
-) -> HashMap<u16, Option<Color>> {
-    let mut indexes = HashMap::new();
-    // get the indexes based on left
+// fn get_index_and_value(
+//     num: u16,
+//     left: u16,
+//     len: u16,
+//     value: Vec<Option<Color>>,
+// ) -> HashMap<u16, Option<Color>> {
+//     let mut indexes = HashMap::new();
+//     // get the indexes based on left
+//     let done = len - left;
+//     let index = left / num;
+//     for i in 0..num {
+//         indexes.insert(done + (index * i), value[i as usize]);
+//     }
+//     indexes
+// }
+
+pub fn get_index_and_value<T>(num: u16, left: u16, len: u16, value: &Vec<T>) -> HashMap<u16, T>
+where
+    T: Clone,
+{
+    let mut index_and_value = HashMap::new();
     let done = len - left;
     let index = left / num;
     for i in 0..num {
-        indexes.insert(done + (index * i), value[i as usize]);
+        index_and_value.insert(done + (index * i), value[i as usize].clone());
     }
-    indexes
+    index_and_value
 }
+
 mod auto_run {
     use crate::{Color, LoadingBar};
     use std::{collections::HashMap, fmt};
@@ -318,6 +332,20 @@ mod auto_run {
                 }
             });
         }
+        pub fn auto_run_change_points<T>(
+            time_in_seconds: u16,
+            len: u16,
+            start: u16,
+            start_pos: (u16, u16),
+            change: HashMap<T, Option<Color>>,
+            type_change: Types,
+        ) where
+            T: Copy + fmt::Debug,
+            u16: From<T>,
+            f32: From<T>,
+        {
+            // TODO: implement
+        }
         pub fn auto_run_from_change(
             loading_bar: LoadingBar,
             change: Vec<Option<Color>>,
@@ -329,7 +357,7 @@ mod auto_run {
                 change_len,
                 loading_bar.space_left + 1,
                 loading_bar.len,
-                change,
+                &change,
             );
             LoadingBar::auto_run_from_change_points(
                 loading_bar,

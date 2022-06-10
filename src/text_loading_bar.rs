@@ -285,7 +285,10 @@ fn get_num_lines_witdh(text: &str) -> u16 {
 }
 
 mod auto_run {
-    use std::fmt::{self, Display};
+    use std::{
+        collections::HashMap,
+        fmt::{self, Display},
+    };
 
     use colored::Color;
 
@@ -299,6 +302,13 @@ mod auto_run {
         pub bar: Vec<Option<Color>>,
     }
 
+    pub struct TextLoadingBarAutoPoint<U> {
+        pub top_text: HashMap<U, String>,
+        pub bottom_text: HashMap<U, String>,
+        pub top: HashMap<U, Option<Color>>,
+        pub bottom: HashMap<U, Option<Color>>,
+        pub bar: HashMap<U, Option<Color>>,
+    }
     enum TextLoadingBarAutoOptionsType {
         TopText,
         BottomText,
@@ -408,6 +418,20 @@ mod auto_run {
             TextLoadingBar::auto_run_from_change(self_clone, option, time_in_seconds)
         }
 
+        pub fn auto_run_change_points<T>(
+            time_in_seconds: u16,
+            len: u16,
+            start: u16,
+            start_pos: (u16, u16),
+            change: TextLoadingBarAutoPoint<T>,
+            type_change: crate::Types,
+        ) where
+            T: Copy + fmt::Debug,
+            u16: From<T>,
+            f32: From<T>,
+        {
+            // TODO: implement
+        }
         pub fn auto_run_from(mut text_loading_bar: TextLoadingBar, time_in_seconds: u16) {
             let index = time_in_seconds as f32 / (text_loading_bar.t_bar.space_left + 1) as f32;
 
@@ -431,64 +455,72 @@ mod auto_run {
                 option.get_len();
             // find the the bar index(s) for each variable we just took from the option struct
             let mut total = text_loading_bar.t_bar.len - (text_loading_bar.t_bar.space_left);
-            let bottom_color = crate::get_indexes(
+            let bottom_color = crate::get_index_and_value(
                 bottom_color_len,
                 text_loading_bar.t_bar.space_left + 1,
                 text_loading_bar.t_bar.len,
+                &option.bottom,
             );
-            let top_color = crate::get_indexes(
+            let top_color = crate::get_index_and_value(
                 top_color_len,
                 text_loading_bar.t_bar.space_left + 1,
                 text_loading_bar.t_bar.len,
+                &option.top,
             );
-            let top = crate::get_indexes(
+            let top = crate::get_index_and_value(
                 top_len,
                 text_loading_bar.t_bar.space_left + 1,
                 text_loading_bar.t_bar.len,
+                &option.top_text,
             );
-            let bottom = crate::get_indexes(
+            let bottom = crate::get_index_and_value(
                 bottom_len,
                 text_loading_bar.t_bar.space_left + 1,
                 text_loading_bar.t_bar.len,
+                &option.bottom_text,
             );
-            let bar_color = crate::get_indexes(
+            let bar_color = crate::get_index_and_value(
                 bar_color_len,
                 text_loading_bar.t_bar.space_left + 1,
                 text_loading_bar.t_bar.len,
+                &option.bar,
             );
-            let (mut bottom_cc, mut top_cc, mut top_tc, mut bottom_tc, mut bar_cc) =
-                (0, 0, 0, 0, 0); // the cc or tc is for the type to t fpr text, c for color and the final is for count/index
             text_loading_bar.print();
             std::thread::spawn(move || {
                 for _ in 0..(text_loading_bar.t_bar.space_left) {
-                    total += 1;
                     if bar_color.contains_key(&total) {
-                        bar_cc += 1;
-                        text_loading_bar.t_bar.color = option.bar[bar_cc].clone();
+                        text_loading_bar.t_bar.color = bar_color[&total];
                     }
                     if top_color.contains_key(&total) {
-                        top_cc += 1;
-                        text_loading_bar.top_text.color = option.top[top_cc].clone();
+                        text_loading_bar.top_text.color = top_color[&total];
                     }
                     if bottom_color.contains_key(&total) {
-                        bottom_cc += 1;
-                        text_loading_bar.bottom_text.color = option.bottom[bottom_cc].clone();
+                        text_loading_bar.bottom_text.color = bottom_color[&total];
                     }
                     if top.contains_key(&total) {
-                        top_tc += 1;
-                        text_loading_bar.top_text.text =
-                            format!("{}", option.top_text[top_tc].clone());
+                        text_loading_bar.top_text.text = String::from(&top[&total]);
                     }
                     if bottom.contains_key(&total) {
-                        text_loading_bar.bottom_text.text =
-                            format!("{}", option.bottom_text[bottom_tc].clone());
-                        bottom_tc += 1;
+                        text_loading_bar.bottom_text.text = String::from(&bottom[&total]);
                     }
                     text_loading_bar.advance();
                     std::thread::sleep(std::time::Duration::from_secs_f32(index));
-                    text_loading_bar.print()
+                    text_loading_bar.print();
+                    total += 1;
                 }
             });
+        }
+        pub fn auto_run_from_change_points<T>(
+            mut loading_bar: TextLoadingBar,
+            change: TextLoadingBarAutoPoint<T>,
+            time_in_seconds: u16,
+            type_change: crate::Types,
+        ) where
+            T: Copy + fmt::Debug,
+            u16: From<T>,
+            f32: From<T>,
+        {
+            // TODO: implement this
         }
     }
 }
