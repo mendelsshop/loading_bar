@@ -141,41 +141,6 @@ impl LoadingBar {
         self.goline_clear_print()
     }
 
-    pub fn auto_run(
-        time_in_seconds: u16,
-        len: u16,
-        start: u16,
-        color: Option<colored::Color>,
-        start_pos: (u16, u16),
-    ) {
-        if start >= len {
-            println!();
-            panic!("\x07start must be less than len\x07");
-        }
-        // find the amount of time that has per incremen
-        let self_clone = LoadingBar {
-            len,
-            index: start,
-            done: false,
-            color,
-            space_left: len - start,
-            half: false,
-            start_pos,
-        };
-        LoadingBar::auto_run_from(self_clone, time_in_seconds)
-    }
-
-    pub fn auto_run_from(mut loading_bar: LoadingBar, time_in_seconds: u16) {
-        let index = time_in_seconds as f32 / (loading_bar.space_left + 1) as f32;
-        loading_bar.print();
-        std::thread::spawn(move || {
-            for _ in 0..(loading_bar.space_left) {
-                loading_bar.advance_print();
-                std::thread::sleep(std::time::Duration::from_secs_f32(index));
-            }
-        });
-    }
-
     pub fn change_color(self: &mut LoadingBar, color: Option<colored::Color>) {
         self.color = color;
     }
@@ -274,4 +239,93 @@ fn get_indexes(num: u16, left: u16, len: u16) -> HashMap<u16, u16> {
         indexes.insert(done + (index * i), i);
     }
     indexes
+}
+mod auto_run {
+    use crate::{Color, LoadingBar};
+    impl LoadingBar {
+        pub fn auto_run(
+            time_in_seconds: u16,
+            len: u16,
+            start: u16,
+            color: Option<colored::Color>,
+            start_pos: (u16, u16),
+        ) {
+            if start >= len {
+                println!();
+                panic!("\x07start must be less than len\x07");
+            }
+            // find the amount of time that has per incremen
+            let self_clone = LoadingBar {
+                len,
+                index: start,
+                done: false,
+                color,
+                space_left: len - start,
+                half: false,
+                start_pos,
+            };
+            LoadingBar::auto_run_from(self_clone, time_in_seconds)
+        }
+
+        pub fn auto_run_change(
+            change: Vec<Option<Color>>,
+            time_in_seconds: u16,
+            len: u16,
+            start: u16,
+            start_pos: (u16, u16),
+        ) {
+            if start >= len {
+                println!();
+                panic!("\x07start must be less than len\x07");
+            }
+            let mut self_clone = LoadingBar::new(len, change[0].clone(), start_pos);
+            self_clone.advance_by(start);
+            LoadingBar::auto_run_from_change(self_clone, change, time_in_seconds)
+        }
+
+        pub fn auto_run_from(mut loading_bar: LoadingBar, time_in_seconds: u16) {
+            let index = time_in_seconds as f32 / (loading_bar.space_left + 1) as f32;
+            loading_bar.print();
+            std::thread::spawn(move || {
+                for _ in 0..(loading_bar.space_left) {
+                    loading_bar.advance_print();
+                    std::thread::sleep(std::time::Duration::from_secs_f32(index));
+                }
+            });
+        }
+        pub fn auto_run_from_change(
+            mut loading_bar: LoadingBar,
+            change: Vec<Option<Color>>,
+            time_in_seconds: u16,
+        ) {
+            let index = time_in_seconds as f32 / (loading_bar.space_left + 1) as f32;
+            let mut total = loading_bar.len - (loading_bar.space_left);
+            let change_len = change.len() as u16;
+            let change_color =
+                crate::get_indexes(change_len, loading_bar.space_left + 1, loading_bar.len);
+
+            let mut bar_cc = 0;
+            loading_bar.print();
+            std::thread::spawn(move || {
+                for _ in 0..(loading_bar.space_left) {
+                    total += 1;
+                    if change_color.contains_key(&total) {
+                        bar_cc += 1;
+                        loading_bar.color = change[bar_cc].clone();
+                    }
+
+                    loading_bar.advance();
+                    std::thread::sleep(std::time::Duration::from_secs_f32(index));
+                    loading_bar.print()
+                }
+            });
+        }
+    }
+}
+
+mod change_at {
+    use crate::LoadingBar;
+    impl LoadingBar {
+        // TODO: implement change at type functions
+    }
 }

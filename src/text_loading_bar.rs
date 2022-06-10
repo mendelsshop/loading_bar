@@ -4,8 +4,8 @@ use std::{
     io::stdout,
 };
 
-pub use crate::{Color, LoadingBar};
-
+use crate::{Color, LoadingBar};
+pub use auto_run::TextLoadingBarAutoOptions;
 use colored::Colorize;
 
 use crossterm::{
@@ -14,64 +14,6 @@ use crossterm::{
     style::Print,
     terminal::{Clear, ClearType},
 };
-
-#[derive(Debug)]
-pub struct TextLoadingBarAutoOptions {
-    pub top_text: Vec<String>,
-    pub bottom_text: Vec<String>,
-    pub top: Vec<Option<Color>>,
-    pub bottom: Vec<Option<Color>>,
-    pub bar: Vec<Option<Color>>,
-}
-
-enum TextLoadingBarAutoOptionsType {
-    TopText,
-    BottomText,
-    Top,
-    Bottom,
-    Bar,
-}
-
-impl Display for TextLoadingBarAutoOptionsType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            TextLoadingBarAutoOptionsType::TopText => write!(f, "top_text"),
-            TextLoadingBarAutoOptionsType::BottomText => write!(f, "bottom_text"),
-            TextLoadingBarAutoOptionsType::Top => write!(f, "top"),
-            TextLoadingBarAutoOptionsType::Bottom => write!(f, "bottom"),
-            TextLoadingBarAutoOptionsType::Bar => write!(f, "bar"),
-        }
-    }
-}
-
-impl TextLoadingBarAutoOptions {
-    pub fn get_len(&self) -> (u16, u16, u16, u16, u16) {
-        let times = (
-            TextLoadingBarAutoOptions::check(
-                self.top_text.len(),
-                TextLoadingBarAutoOptionsType::TopText,
-            ),
-            TextLoadingBarAutoOptions::check(
-                self.bottom_text.len(),
-                TextLoadingBarAutoOptionsType::BottomText,
-            ),
-            TextLoadingBarAutoOptions::check(self.top.len(), TextLoadingBarAutoOptionsType::Top),
-            TextLoadingBarAutoOptions::check(
-                self.bottom.len(),
-                TextLoadingBarAutoOptionsType::Bottom,
-            ),
-            TextLoadingBarAutoOptions::check(self.bar.len(), TextLoadingBarAutoOptionsType::Bar),
-        );
-        times
-    }
-    fn check(num: usize, types: TextLoadingBarAutoOptionsType) -> u16 {
-        if num == 0 {
-            panic!("{} is 0", types);
-        } else {
-            num as u16
-        }
-    }
-}
 
 pub enum TextLoadingBarOptions {
     Text(String),
@@ -180,142 +122,6 @@ impl TextLoadingBar {
             },
             t_start_pos,
         }
-    }
-
-    pub fn auto_run(
-        top_text: String,
-        bottom_text: String,
-        time_in_seconds: u16,
-        len: u16,
-        start: u16,
-        color: (
-            Option<colored::Color>, // top text color
-            Option<colored::Color>, // bar color
-            Option<colored::Color>, // bottom text color
-        ),
-        t_start_pos: (u16, u16),
-    ) {
-        if start >= len {
-            println!();
-            panic!("\x07start must be less than len\x07");
-        }
-        let (top_text_color, bar_color, bottom_text_color) = color;
-        let self_clone = TextLoadingBar::new(
-            top_text,
-            bottom_text,
-            len,
-            (top_text_color, bar_color, bottom_text_color),
-            t_start_pos,
-        );
-        TextLoadingBar::auto_run_from(self_clone, time_in_seconds)
-    }
-
-    pub fn auto_run_change(
-        option: TextLoadingBarAutoOptions,
-        time_in_seconds: u16,
-        len: u16,
-        start: u16,
-        start_pos: (u16, u16),
-    ) {
-        if start >= len {
-            println!();
-            panic!("\x07start must be less than len\x07");
-        }
-        let mut self_clone = TextLoadingBar::new(
-            option.top_text[0].clone(),
-            option.bottom_text[0].clone(),
-            len,
-            (
-                option.top[0].clone(),
-                option.bar[0].clone(),
-                option.bottom[0].clone(),
-            ),
-            start_pos,
-        );
-        self_clone.advance_by(start);
-        TextLoadingBar::auto_run_from_change(self_clone, option, time_in_seconds)
-    }
-
-    pub fn auto_run_from(mut text_loading_bar: TextLoadingBar, time_in_seconds: u16) {
-        let index = time_in_seconds as f32 / (text_loading_bar.t_bar.space_left + 1) as f32;
-
-        text_loading_bar.print();
-        std::thread::spawn(move || {
-            for _ in 0..(text_loading_bar.t_bar.space_left) {
-                text_loading_bar.advance_print();
-                std::thread::sleep(std::time::Duration::from_secs_f32(index));
-            }
-        });
-    }
-
-    pub fn auto_run_from_change(
-        mut text_loading_bar: TextLoadingBar,
-        option: TextLoadingBarAutoOptions,
-        time_in_seconds: u16,
-    ) {
-        let index = time_in_seconds as f32 / (text_loading_bar.t_bar.space_left + 1) as f32;
-        // / get the length of each vector from the option struct
-        let (top_len, bottom_len, bar_color_len, top_color_len, bottom_color_len) =
-            option.get_len();
-        // find the the bar index(s) for each variable we just took from the option struct
-        let mut total = text_loading_bar.t_bar.len - (text_loading_bar.t_bar.space_left);
-        let bottom_color = crate::get_indexes(
-            bottom_color_len,
-            text_loading_bar.t_bar.space_left + 1,
-            text_loading_bar.t_bar.len,
-        );
-        let top_color = crate::get_indexes(
-            top_color_len,
-            text_loading_bar.t_bar.space_left + 1,
-            text_loading_bar.t_bar.len,
-        );
-        let top = crate::get_indexes(
-            top_len,
-            text_loading_bar.t_bar.space_left + 1,
-            text_loading_bar.t_bar.len,
-        );
-        let bottom = crate::get_indexes(
-            bottom_len,
-            text_loading_bar.t_bar.space_left + 1,
-            text_loading_bar.t_bar.len,
-        );
-        let bar_color = crate::get_indexes(
-            bar_color_len,
-            text_loading_bar.t_bar.space_left + 1,
-            text_loading_bar.t_bar.len,
-        );
-        let (mut bottom_cc, mut top_cc, mut top_tc, mut bottom_tc, mut bar_cc) = (0, 0, 0, 0, 0); // the cc or tc is for the type to t fpr text, c for color and the final is for count/index
-        text_loading_bar.print();
-        std::thread::spawn(move || {
-            for _ in 0..(text_loading_bar.t_bar.space_left) {
-                total += 1;
-                if bar_color.contains_key(&total) {
-                    bar_cc += 1;
-                    text_loading_bar.t_bar.color = option.bar[bar_cc].clone();
-                }
-                if top_color.contains_key(&total) {
-                    top_cc += 1;
-                    text_loading_bar.top_text.color = option.top[top_cc].clone();
-                }
-                if bottom_color.contains_key(&total) {
-                    bottom_cc += 1;
-                    text_loading_bar.bottom_text.color = option.bottom[bottom_cc].clone();
-                }
-                if top.contains_key(&total) {
-                    top_tc += 1;
-                    text_loading_bar.top_text.text =
-                        format!("{} {:?}", option.top_text[top_tc].clone(), top);
-                }
-                if bottom.contains_key(&total) {
-                    text_loading_bar.bottom_text.text =
-                        format!("{} {:?}", option.bottom_text[bottom_tc].clone(), bottom);
-                    bottom_tc += 1;
-                }
-                text_loading_bar.advance();
-                std::thread::sleep(std::time::Duration::from_secs_f32(index));
-                text_loading_bar.print()
-            }
-        });
     }
 
     fn goline_clear_print(&self) {
@@ -476,4 +282,220 @@ fn get_num_lines_witdh(text: &str) -> u16 {
         }
     }
     num_lines
+}
+
+mod auto_run {
+    use std::fmt::{self, Display};
+
+    use colored::Color;
+
+    use crate::text_loading_bar::TextLoadingBar;
+    #[derive(Debug)]
+    pub struct TextLoadingBarAutoOptions {
+        pub top_text: Vec<String>,
+        pub bottom_text: Vec<String>,
+        pub top: Vec<Option<Color>>,
+        pub bottom: Vec<Option<Color>>,
+        pub bar: Vec<Option<Color>>,
+    }
+
+    enum TextLoadingBarAutoOptionsType {
+        TopText,
+        BottomText,
+        Top,
+        Bottom,
+        Bar,
+    }
+
+    impl Display for TextLoadingBarAutoOptionsType {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            match self {
+                TextLoadingBarAutoOptionsType::TopText => write!(f, "top_text"),
+                TextLoadingBarAutoOptionsType::BottomText => write!(f, "bottom_text"),
+                TextLoadingBarAutoOptionsType::Top => write!(f, "top"),
+                TextLoadingBarAutoOptionsType::Bottom => write!(f, "bottom"),
+                TextLoadingBarAutoOptionsType::Bar => write!(f, "bar"),
+            }
+        }
+    }
+
+    impl TextLoadingBarAutoOptions {
+        pub fn get_len(&self) -> (u16, u16, u16, u16, u16) {
+            let times = (
+                TextLoadingBarAutoOptions::check(
+                    self.top_text.len(),
+                    TextLoadingBarAutoOptionsType::TopText,
+                ),
+                TextLoadingBarAutoOptions::check(
+                    self.bottom_text.len(),
+                    TextLoadingBarAutoOptionsType::BottomText,
+                ),
+                TextLoadingBarAutoOptions::check(
+                    self.top.len(),
+                    TextLoadingBarAutoOptionsType::Top,
+                ),
+                TextLoadingBarAutoOptions::check(
+                    self.bottom.len(),
+                    TextLoadingBarAutoOptionsType::Bottom,
+                ),
+                TextLoadingBarAutoOptions::check(
+                    self.bar.len(),
+                    TextLoadingBarAutoOptionsType::Bar,
+                ),
+            );
+            times
+        }
+        fn check(num: usize, types: TextLoadingBarAutoOptionsType) -> u16 {
+            if num == 0 {
+                panic!("{} is 0", types);
+            } else {
+                num as u16
+            }
+        }
+    }
+    impl TextLoadingBar {
+        pub fn auto_run(
+            top_text: String,
+            bottom_text: String,
+            time_in_seconds: u16,
+            len: u16,
+            start: u16,
+            color: (
+                Option<colored::Color>, // top text color
+                Option<colored::Color>, // bar color
+                Option<colored::Color>, // bottom text color
+            ),
+            t_start_pos: (u16, u16),
+        ) {
+            if start >= len {
+                println!();
+                panic!("\x07start must be less than len\x07");
+            }
+            let (top_text_color, bar_color, bottom_text_color) = color;
+            let self_clone = TextLoadingBar::new(
+                top_text,
+                bottom_text,
+                len,
+                (top_text_color, bar_color, bottom_text_color),
+                t_start_pos,
+            );
+            TextLoadingBar::auto_run_from(self_clone, time_in_seconds)
+        }
+
+        pub fn auto_run_change(
+            option: TextLoadingBarAutoOptions,
+            time_in_seconds: u16,
+            len: u16,
+            start: u16,
+            start_pos: (u16, u16),
+        ) {
+            if start >= len {
+                println!();
+                panic!("\x07start must be less than len\x07");
+            }
+            let mut self_clone = TextLoadingBar::new(
+                option.top_text[0].clone(),
+                option.bottom_text[0].clone(),
+                len,
+                (
+                    option.top[0].clone(),
+                    option.bar[0].clone(),
+                    option.bottom[0].clone(),
+                ),
+                start_pos,
+            );
+            self_clone.advance_by(start);
+            TextLoadingBar::auto_run_from_change(self_clone, option, time_in_seconds)
+        }
+
+        pub fn auto_run_from(mut text_loading_bar: TextLoadingBar, time_in_seconds: u16) {
+            let index = time_in_seconds as f32 / (text_loading_bar.t_bar.space_left + 1) as f32;
+
+            text_loading_bar.print();
+            std::thread::spawn(move || {
+                for _ in 0..(text_loading_bar.t_bar.space_left) {
+                    text_loading_bar.advance_print();
+                    std::thread::sleep(std::time::Duration::from_secs_f32(index));
+                }
+            });
+        }
+
+        pub fn auto_run_from_change(
+            mut text_loading_bar: TextLoadingBar,
+            option: TextLoadingBarAutoOptions,
+            time_in_seconds: u16,
+        ) {
+            let index = time_in_seconds as f32 / (text_loading_bar.t_bar.space_left + 1) as f32;
+            // / get the length of each vector from the option struct
+            let (top_len, bottom_len, bar_color_len, top_color_len, bottom_color_len) =
+                option.get_len();
+            // find the the bar index(s) for each variable we just took from the option struct
+            let mut total = text_loading_bar.t_bar.len - (text_loading_bar.t_bar.space_left);
+            let bottom_color = crate::get_indexes(
+                bottom_color_len,
+                text_loading_bar.t_bar.space_left + 1,
+                text_loading_bar.t_bar.len,
+            );
+            let top_color = crate::get_indexes(
+                top_color_len,
+                text_loading_bar.t_bar.space_left + 1,
+                text_loading_bar.t_bar.len,
+            );
+            let top = crate::get_indexes(
+                top_len,
+                text_loading_bar.t_bar.space_left + 1,
+                text_loading_bar.t_bar.len,
+            );
+            let bottom = crate::get_indexes(
+                bottom_len,
+                text_loading_bar.t_bar.space_left + 1,
+                text_loading_bar.t_bar.len,
+            );
+            let bar_color = crate::get_indexes(
+                bar_color_len,
+                text_loading_bar.t_bar.space_left + 1,
+                text_loading_bar.t_bar.len,
+            );
+            let (mut bottom_cc, mut top_cc, mut top_tc, mut bottom_tc, mut bar_cc) =
+                (0, 0, 0, 0, 0); // the cc or tc is for the type to t fpr text, c for color and the final is for count/index
+            text_loading_bar.print();
+            std::thread::spawn(move || {
+                for _ in 0..(text_loading_bar.t_bar.space_left) {
+                    total += 1;
+                    if bar_color.contains_key(&total) {
+                        bar_cc += 1;
+                        text_loading_bar.t_bar.color = option.bar[bar_cc].clone();
+                    }
+                    if top_color.contains_key(&total) {
+                        top_cc += 1;
+                        text_loading_bar.top_text.color = option.top[top_cc].clone();
+                    }
+                    if bottom_color.contains_key(&total) {
+                        bottom_cc += 1;
+                        text_loading_bar.bottom_text.color = option.bottom[bottom_cc].clone();
+                    }
+                    if top.contains_key(&total) {
+                        top_tc += 1;
+                        text_loading_bar.top_text.text =
+                            format!("{}", option.top_text[top_tc].clone());
+                    }
+                    if bottom.contains_key(&total) {
+                        text_loading_bar.bottom_text.text =
+                            format!("{}", option.bottom_text[bottom_tc].clone());
+                        bottom_tc += 1;
+                    }
+                    text_loading_bar.advance();
+                    std::thread::sleep(std::time::Duration::from_secs_f32(index));
+                    text_loading_bar.print()
+                }
+            });
+        }
+    }
+}
+
+mod change_at {
+    use crate::text_loading_bar::TextLoadingBar;
+    impl TextLoadingBar {
+        // TODO: implement change at type functions
+    }
 }

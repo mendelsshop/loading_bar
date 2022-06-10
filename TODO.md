@@ -5,5 +5,5 @@
 - make a LoadingBar type struct that doesn't use crossterm for user simplicity 
 - auto run change type function that takes a vector of hash maps where the key is a percent or index into a loading bar and the value is a color or text it will accept an emum wether it is a percent or an index
 - have change at type functions that will change something text or color at a certain index or percent of the loading bar
-- scope change_at type functions into change_at module so to use them you would do `use loading_bar::change_at` or for TextLoadingBar `use loading_bar::text_loading_bar::change_at`
-- scope auto_run type functions into change_at module so to use them you would do `use loading_bar::auto_run` or for TextLoadingBar `use loading_bar::text_loading_bar::auto_run`
+
+
