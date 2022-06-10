@@ -242,24 +242,7 @@ fn get_indexes(num: u16, left: u16, len: u16) -> HashMap<u16, u16> {
     indexes
 }
 
-// TODO: make this function work with auto_run_from_change instead of using get_index
-// fn get_index_and_value(
-//     num: u16,
-//     left: u16,
-//     len: u16,
-//     value: Vec<Option<Color>>,
-// ) -> HashMap<u16, Option<Color>> {
-//     let mut indexes = HashMap::new();
-//     // get the indexes based on left
-//     let done = len - left;
-//     let index = left / num;
-//     for i in 0..num {
-//         indexes.insert(done + (index * i), value[i as usize]);
-//     }
-//     indexes
-// }
-
-pub fn get_index_and_value<T>(num: u16, left: u16, len: u16, value: &Vec<T>) -> HashMap<u16, T>
+fn get_index_and_value<T>(num: u16, left: u16, len: u16, value: &Vec<T>) -> HashMap<u16, T>
 where
     T: Clone,
 {
