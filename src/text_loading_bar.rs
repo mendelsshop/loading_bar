@@ -418,6 +418,7 @@ mod auto_run {
             TextLoadingBar::auto_run_from_change(self_clone, option, time_in_seconds)
         }
 
+        // might have to use default fields for texts and colors
         pub fn auto_run_change_points<T>(
             time_in_seconds: u16,
             len: u16,

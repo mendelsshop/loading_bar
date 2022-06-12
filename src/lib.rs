@@ -327,7 +327,21 @@ mod auto_run {
             u16: From<T>,
             f32: From<T>,
         {
-            // TODO: implement
+            if start >= len {
+                println!();
+                panic!("\x07start must be less than len\x07");
+            }
+            let mut self_clone = LoadingBar {
+                len,
+                index: start,
+                done: false,
+                color: None,
+                space_left: len - start,
+                half: false,
+                start_pos,
+            };
+            self_clone.advance_by(start);
+            LoadingBar::auto_run_from_change_points(self_clone, change,  time_in_seconds, type_change)
         }
         pub fn auto_run_from_change(
             loading_bar: LoadingBar,
