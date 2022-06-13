@@ -5,7 +5,7 @@ use std::{
 };
 
 use crate::{Color, LoadingBar, Types};
-pub use auto_run::TextLoadingBarAutoOptions;
+pub use auto_run::{TextLoadingBarAutoOptions, TextLoadingBarAutoPoint};
 use colored::Colorize;
 
 use crossterm::{
