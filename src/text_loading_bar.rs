@@ -4,7 +4,7 @@ use std::{
     io::stdout,
 };
 
-use crate::{Color, LoadingBar};
+use crate::{Color, LoadingBar, Types};
 pub use auto_run::TextLoadingBarAutoOptions;
 use colored::Colorize;
 
@@ -302,12 +302,12 @@ mod auto_run {
         pub bar: Vec<Option<Color>>,
     }
 
-    pub struct TextLoadingBarAutoPoint<U> {
-        pub top_text: HashMap<U, String>,
-        pub bottom_text: HashMap<U, String>,
-        pub top: HashMap<U, Option<Color>>,
-        pub bottom: HashMap<U, Option<Color>>,
-        pub bar: HashMap<U, Option<Color>>,
+    pub struct TextLoadingBarAutoPoint<T> {
+        pub top_text: HashMap<T, String>,
+        pub bottom_text: HashMap<T, String>,
+        pub top: HashMap<T, Option<Color>>,
+        pub bottom: HashMap<T, Option<Color>>,
+        pub bar: HashMap<T, Option<Color>>,
     }
     enum TextLoadingBarAutoOptionsType {
         TopText,
@@ -432,6 +432,24 @@ mod auto_run {
             f32: From<T>,
         {
             // TODO: implement
+            if start >= len {
+                println!();
+                panic!("\x07start must be less than len\x07");
+            }
+            let mut self_clone = TextLoadingBar::new(
+                "".to_string(),
+                "".to_string(),
+                len,
+                (None, None, None),
+                start_pos,
+            );
+            self_clone.advance_by(start);
+            TextLoadingBar::auto_run_from_change_points(
+                self_clone,
+                change,
+                time_in_seconds,
+                type_change,
+            )
         }
         pub fn auto_run_from(mut text_loading_bar: TextLoadingBar, time_in_seconds: u16) {
             let index = time_in_seconds as f32 / (text_loading_bar.t_bar.space_left + 1) as f32;
@@ -522,8 +540,64 @@ mod auto_run {
             f32: From<T>,
         {
             // TODO: implement this
+            let index = time_in_seconds as f32 / (loading_bar.t_bar.space_left + 1) as f32;
+            let mut total = loading_bar.t_bar.len - (loading_bar.t_bar.space_left);
+            let top = super::generic_to_u16(loading_bar.t_bar.len, change.top_text, type_change);
+            let bottom =
+                super::generic_to_u16(loading_bar.t_bar.len, change.bottom_text, type_change);
+            let bar_color = super::generic_to_u16(loading_bar.t_bar.len, change.bar, type_change);
+            let top_color = super::generic_to_u16(loading_bar.t_bar.len, change.top, type_change);
+            let bottom_color =
+                super::generic_to_u16(loading_bar.t_bar.len, change.bottom, type_change);
+            loading_bar.print();
+            std::thread::spawn(move || {
+                for _ in 0..(loading_bar.t_bar.space_left) {
+                    total += 1;
+                    if top.contains_key(&total) {
+                        loading_bar.top_text.text = top[&total].clone();
+                    }
+                    if bottom.contains_key(&total) {
+                        loading_bar.bottom_text.text = bottom[&total].clone();
+                    }
+                    if bar_color.contains_key(&total) {
+                        loading_bar.t_bar.color = bar_color[&total];
+                    }
+                    if top_color.contains_key(&total) {
+                        loading_bar.top_text.color = top_color[&total];
+                    }
+                    if bottom_color.contains_key(&total) {
+                        loading_bar.bottom_text.color = bottom_color[&total];
+                    }
+
+                    loading_bar.advance();
+                    std::thread::sleep(std::time::Duration::from_secs_f32(index));
+                    loading_bar.print()
+                }
+            });
         }
     }
+}
+
+pub fn generic_to_u16<T, U>(len: u16, change: HashMap<T, U>, type_of: Types) -> HashMap<u16, U>
+where
+    T: Copy + fmt::Debug,
+    U: fmt::Debug + Clone,
+    u16: From<T>,
+    f32: From<T>,
+{
+    let mut change_color = HashMap::new();
+    if Types::Percent == type_of {
+        for (key, value) in change.iter() {
+            let key: u16 = (len as f32 * f32::from(*key) / 100.0) as u16;
+            change_color.insert(key, value.clone());
+        }
+    } else {
+        for (key, value) in change.iter() {
+            let change_key: u16 = u16::from(*key);
+            change_color.insert(change_key, value.clone());
+        }
+    }
+    change_color
 }
 
 mod change_at {

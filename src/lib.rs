@@ -256,9 +256,9 @@ where
 }
 
 mod auto_run {
-    use crate::{Color, LoadingBar};
+    use crate::{text_loading_bar, Color, LoadingBar};
     use std::{collections::HashMap, fmt};
-    #[derive(PartialEq)]
+    #[derive(PartialEq, Clone, Copy)]
     pub enum Types {
         Percent,
         Index,
@@ -315,17 +315,19 @@ mod auto_run {
                 }
             });
         }
-        pub fn auto_run_change_points<T>(
+        pub fn auto_run_change_points<T, U>(
             time_in_seconds: u16,
             len: u16,
             start: u16,
             start_pos: (u16, u16),
-            change: HashMap<T, Option<Color>>,
+            change: HashMap<T, U>,
             type_change: Types,
         ) where
             T: Copy + fmt::Debug,
             u16: From<T>,
             f32: From<T>,
+            U: Copy + fmt::Debug + std::marker::Send + 'static,
+            Option<Color>: From<U>,
         {
             if start >= len {
                 println!();
@@ -341,7 +343,12 @@ mod auto_run {
                 start_pos,
             };
             self_clone.advance_by(start);
-            LoadingBar::auto_run_from_change_points(self_clone, change,  time_in_seconds, type_change)
+            LoadingBar::auto_run_from_change_points(
+                self_clone,
+                change,
+                time_in_seconds,
+                type_change,
+            )
         }
         pub fn auto_run_from_change(
             loading_bar: LoadingBar,
@@ -365,45 +372,34 @@ mod auto_run {
         }
 
         // TODO: make a similar function in TextLoadingBar and each one respective non from function
-        pub fn auto_run_from_change_points<U>(
+        pub fn auto_run_from_change_points<T, U>(
             mut loading_bar: LoadingBar,
-            change: HashMap<U, Option<Color>>,
+            change: HashMap<T, U>,
             time_in_seconds: u16,
             type_change: Types,
         ) where
-            U: Copy + fmt::Debug,
-            u16: From<U>,
-            f32: From<U>,
+            T: Copy + fmt::Debug,
+            u16: From<T>,
+            f32: From<T>,
+            U: Copy + fmt::Debug + std::marker::Send + 'static,
+            Option<Color>: From<U>,
         {
             let index = time_in_seconds as f32 / (loading_bar.space_left + 1) as f32;
             let mut total = loading_bar.len - (loading_bar.space_left);
-            let mut change_color = HashMap::new();
-
-            if Types::Percent == type_change {
-                for (key, value) in change.iter() {
-                    let key: u16 = (loading_bar.len as f32 * f32::from(*key) / 100.0) as u16;
-                    change_color.insert(key, value.clone());
-                }
-            } else {
-                for (key, value) in change.iter() {
-                    let change_key: u16 = u16::from(*key);
-                    change_color.insert(change_key, value.clone());
-                }
-
-                loading_bar.print();
-                std::thread::spawn(move || {
-                    for _ in 0..(loading_bar.space_left) {
-                        total += 1;
-                        if change_color.contains_key(&total) {
-                            loading_bar.color = change_color[&total].clone();
-                        }
-
-                        loading_bar.advance();
-                        std::thread::sleep(std::time::Duration::from_secs_f32(index));
-                        loading_bar.print()
+            let new_hash = text_loading_bar::generic_to_u16(loading_bar.len, change, type_change);
+            loading_bar.print();
+            std::thread::spawn(move || {
+                for _ in 0..(loading_bar.space_left) {
+                    total += 1;
+                    if new_hash.contains_key(&total) {
+                        loading_bar.color = Option::<Color>::from(new_hash[&total].clone());
                     }
-                });
-            }
+
+                    loading_bar.advance();
+                    std::thread::sleep(std::time::Duration::from_secs_f32(index));
+                    loading_bar.print()
+                }
+            });
         }
     }
 }
