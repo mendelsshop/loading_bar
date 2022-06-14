@@ -288,8 +288,6 @@ where
 }
 
 mod auto_run {
-    /// # these methods/functions are used to auomatically generate and or update the loading bar
-    /// Note: because I don't fully understand threads and mutexes, you can't acces the loading bar once it's been used in one of these methods.
     use crate::{Color, LoadingBar};
     use std::{collections::HashMap, fmt, marker, thread, time::Duration};
     #[derive(PartialEq, Clone, Copy)]
@@ -297,7 +295,8 @@ mod auto_run {
         Percent,
         Index,
     }
-
+    /// # these methods/functions are used to auomatically generate and or update the loading bar
+    /// Note: because I don't fully understand threads and mutexes, you can't acces the loading bar once it's been used in one of these methods.
     impl LoadingBar {
         pub fn auto_run(
             time_in_seconds: u16,
