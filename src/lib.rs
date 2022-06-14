@@ -291,6 +291,7 @@ mod auto_run {
     use crate::{Color, LoadingBar};
     use std::{collections::HashMap, fmt, marker, thread, time::Duration};
     #[derive(PartialEq, Clone, Copy)]
+    /// The type of change that is being made to the loading element (percentage or number)
     pub enum Types {
         Percent,
         Index,
