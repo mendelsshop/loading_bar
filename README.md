@@ -1,7 +1,6 @@
 # loading_bar
 [![crates.io](https://img.shields.io/crates/v/loading_bar.svg)](https://crates.io/crates/loading_bar)
 [![docs.rs](https://img.shields.io/docsrs/loading_bar)](https://docs.rs/loading_bar/latest/loading_bar)
-### Note this is a Beta release to update docs.rs/crates.io
 ## About:
 This my "Awesome" loading bar library.
 <br>
