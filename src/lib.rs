@@ -27,7 +27,7 @@ pub enum LoadingBarOptions {
 impl LoadingBarOptions {
     fn get_color(&self) -> Option<Color> {
         match self {
-            LoadingBarOptions::Color(color) => color.clone(),
+            LoadingBarOptions::Color(color) => *color,
             _ => None,
         }
     }
@@ -56,15 +56,21 @@ impl LoadingBarOptions {
 
 #[derive(Debug, Clone)]
 pub struct LoadingBar {
-    pub len: u16,
+    len: u16,
     index: u16,
-    pub done: bool,
+    done: bool,
     color: Option<colored::Color>,
-    pub space_left: u16,
+    space_left: u16,
     half: bool,
     start_pos: (u16, u16),
 }
+
+/// # These methods are for basic loading bar creation and manipulation.
 impl LoadingBar {
+    /// this is used to create a new loading bar
+    /// # Arguments Len: Length of the loading bar
+    /// # Arguments Color: Color of the loading bar, if None, it will be white
+    /// # Arguments Pos: Position of the loading bar in the terminal using (x, y)
     pub fn new(len: u16, color: Option<colored::Color>, start_pos: (u16, u16)) -> LoadingBar {
         LoadingBar {
             len,
@@ -77,6 +83,9 @@ impl LoadingBar {
         }
     }
 
+    /// this is used to change the position of the loading bar in the terminal using (x, y)
+    /// # Arguments Pos: Position of the loading bar in the terminal using (x, y)
+    /// it will cleear the old position and move to the new position (but not print anything)
     pub fn change_pos(&mut self, pos: (u16, u16)) {
         // clear the old bar
         let (x, y) = self.start_pos;
@@ -87,6 +96,7 @@ impl LoadingBar {
         self.start_pos = pos;
     }
 
+    /// this is the same as change_pos but it also prints the the loading bar
     pub fn change_pos_print(&mut self, pos: (u16, u16)) {
         self.change_pos(pos);
         self.print();
@@ -242,7 +252,7 @@ fn get_indexes(num: u16, left: u16, len: u16) -> HashMap<u16, u16> {
     indexes
 }
 
-fn get_index_and_value<T>(num: u16, left: u16, len: u16, value: &Vec<T>) -> HashMap<u16, T>
+fn get_index_and_value<T>(num: u16, left: u16, len: u16, value: &[T]) -> HashMap<u16, T>
 where
     T: Clone,
 {
@@ -255,9 +265,33 @@ where
     index_and_value
 }
 
+fn generic_to_u16<T, U>(len: u16, change: HashMap<T, U>, type_of: Types) -> HashMap<u16, U>
+where
+    T: Copy + fmt::Debug,
+    U: fmt::Debug + Clone,
+    u16: From<T>,
+    f32: From<T>,
+{
+    let mut change_color = HashMap::new();
+    if Types::Percent == type_of {
+        for (key, value) in change.iter() {
+            let key: u16 = (len as f32 * f32::from(*key) / 100.0) as u16;
+            change_color.insert(key, value.clone());
+        }
+    } else {
+        for (key, value) in change.iter() {
+            let change_key: u16 = u16::from(*key);
+            change_color.insert(change_key, value.clone());
+        }
+    }
+    change_color
+}
+
 mod auto_run {
-    use crate::{text_loading_bar, Color, LoadingBar};
-    use std::{collections::HashMap, fmt};
+    /// # these methods/functions are used to auomatically generate and or update the loading bar
+    /// Note: because I don't fully understand threads and mutexes, you can't acces the loading bar once it's been used in one of these methods.
+    use crate::{Color, LoadingBar};
+    use std::{collections::HashMap, fmt, marker, thread, time::Duration};
     #[derive(PartialEq, Clone, Copy)]
     pub enum Types {
         Percent,
@@ -300,7 +334,7 @@ mod auto_run {
                 println!();
                 panic!("\x07start must be less than len\x07");
             }
-            let mut self_clone = LoadingBar::new(len, change[0].clone(), start_pos);
+            let mut self_clone = LoadingBar::new(len, change[0], start_pos);
             self_clone.advance_by(start);
             LoadingBar::auto_run_from_change(self_clone, change, time_in_seconds)
         }
@@ -308,10 +342,10 @@ mod auto_run {
         pub fn auto_run_from(mut loading_bar: LoadingBar, time_in_seconds: u16) {
             let index = time_in_seconds as f32 / (loading_bar.space_left + 1) as f32;
             loading_bar.print();
-            std::thread::spawn(move || {
+            thread::spawn(move || {
                 for _ in 0..(loading_bar.space_left) {
                     loading_bar.advance_print();
-                    std::thread::sleep(std::time::Duration::from_secs_f32(index));
+                    thread::sleep(Duration::from_secs_f32(index));
                 }
             });
         }
@@ -326,7 +360,7 @@ mod auto_run {
             T: Copy + fmt::Debug,
             u16: From<T>,
             f32: From<T>,
-            U: Copy + fmt::Debug + std::marker::Send + 'static,
+            U: Copy + fmt::Debug + marker::Send + 'static,
             Option<Color>: From<U>,
         {
             if start >= len {
@@ -381,22 +415,22 @@ mod auto_run {
             T: Copy + fmt::Debug,
             u16: From<T>,
             f32: From<T>,
-            U: Copy + fmt::Debug + std::marker::Send + 'static,
+            U: Copy + fmt::Debug + marker::Send + 'static,
             Option<Color>: From<U>,
         {
             let index = time_in_seconds as f32 / (loading_bar.space_left + 1) as f32;
             let mut total = loading_bar.len - (loading_bar.space_left);
-            let new_hash = text_loading_bar::generic_to_u16(loading_bar.len, change, type_change);
+            let new_hash = super::generic_to_u16(loading_bar.len, change, type_change);
             loading_bar.print();
-            std::thread::spawn(move || {
+            thread::spawn(move || {
                 for _ in 0..(loading_bar.space_left) {
                     total += 1;
                     if new_hash.contains_key(&total) {
-                        loading_bar.color = Option::<Color>::from(new_hash[&total].clone());
+                        loading_bar.color = Option::<Color>::from(new_hash[&total]);
                     }
 
                     loading_bar.advance();
-                    std::thread::sleep(std::time::Duration::from_secs_f32(index));
+                    thread::sleep(Duration::from_secs_f32(index));
                     loading_bar.print()
                 }
             });

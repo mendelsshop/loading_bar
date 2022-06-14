@@ -4,7 +4,7 @@ use std::{
     io::stdout,
 };
 
-use crate::{Color, LoadingBar, Types};
+use crate::{Color, LoadingBar};
 pub use auto_run::{TextLoadingBarAutoOptions, TextLoadingBarAutoPoint};
 use colored::Colorize;
 
@@ -34,7 +34,7 @@ impl TextLoadingBarOptions {
 
     fn get_color(&self) -> Option<Color> {
         match self {
-            TextLoadingBarOptions::Color(color) => color.clone(),
+            TextLoadingBarOptions::Color(color) => *color,
             _ => None,
         }
     }
@@ -138,7 +138,7 @@ impl TextLoadingBar {
         }
 
         let text = self.to_string();
-        let text = text.split("\n").collect::<Vec<&str>>();
+        let text = text.split('\n').collect::<Vec<&str>>();
 
         y_copy = y;
         for i in 0..line_count {
@@ -288,6 +288,8 @@ mod auto_run {
     use std::{
         collections::HashMap,
         fmt::{self, Display},
+        thread,
+        time::Duration,
     };
 
     use colored::Color;
@@ -331,7 +333,7 @@ mod auto_run {
 
     impl TextLoadingBarAutoOptions {
         pub fn get_len(&self) -> (u16, u16, u16, u16, u16) {
-            let times = (
+            (
                 TextLoadingBarAutoOptions::check(
                     self.top_text.len(),
                     TextLoadingBarAutoOptionsType::TopText,
@@ -352,8 +354,7 @@ mod auto_run {
                     self.bar.len(),
                     TextLoadingBarAutoOptionsType::Bar,
                 ),
-            );
-            times
+            )
         }
         fn check(num: usize, types: TextLoadingBarAutoOptionsType) -> u16 {
             if num == 0 {
@@ -407,11 +408,7 @@ mod auto_run {
                 option.top_text[0].clone(),
                 option.bottom_text[0].clone(),
                 len,
-                (
-                    option.top[0].clone(),
-                    option.bar[0].clone(),
-                    option.bottom[0].clone(),
-                ),
+                (option.top[0], option.bar[0], option.bottom[0]),
                 start_pos,
             );
             self_clone.advance_by(start);
@@ -455,10 +452,10 @@ mod auto_run {
             let index = time_in_seconds as f32 / (text_loading_bar.t_bar.space_left + 1) as f32;
 
             text_loading_bar.print();
-            std::thread::spawn(move || {
+            thread::spawn(move || {
                 for _ in 0..(text_loading_bar.t_bar.space_left) {
                     text_loading_bar.advance_print();
-                    std::thread::sleep(std::time::Duration::from_secs_f32(index));
+                    thread::sleep(Duration::from_secs_f32(index));
                 }
             });
         }
@@ -505,7 +502,7 @@ mod auto_run {
                 &option.bar,
             );
             text_loading_bar.print();
-            std::thread::spawn(move || {
+            thread::spawn(move || {
                 for _ in 0..(text_loading_bar.t_bar.space_left) {
                     if bar_color.contains_key(&total) {
                         text_loading_bar.t_bar.color = bar_color[&total];
@@ -523,7 +520,7 @@ mod auto_run {
                         text_loading_bar.bottom_text.text = String::from(&bottom[&total]);
                     }
                     text_loading_bar.advance();
-                    std::thread::sleep(std::time::Duration::from_secs_f32(index));
+                    thread::sleep(Duration::from_secs_f32(index));
                     text_loading_bar.print();
                     total += 1;
                 }
@@ -542,15 +539,15 @@ mod auto_run {
             // TODO: implement this
             let index = time_in_seconds as f32 / (loading_bar.t_bar.space_left + 1) as f32;
             let mut total = loading_bar.t_bar.len - (loading_bar.t_bar.space_left);
-            let top = super::generic_to_u16(loading_bar.t_bar.len, change.top_text, type_change);
+            let top = crate::generic_to_u16(loading_bar.t_bar.len, change.top_text, type_change);
             let bottom =
-                super::generic_to_u16(loading_bar.t_bar.len, change.bottom_text, type_change);
-            let bar_color = super::generic_to_u16(loading_bar.t_bar.len, change.bar, type_change);
-            let top_color = super::generic_to_u16(loading_bar.t_bar.len, change.top, type_change);
+                crate::generic_to_u16(loading_bar.t_bar.len, change.bottom_text, type_change);
+            let bar_color = crate::generic_to_u16(loading_bar.t_bar.len, change.bar, type_change);
+            let top_color = crate::generic_to_u16(loading_bar.t_bar.len, change.top, type_change);
             let bottom_color =
-                super::generic_to_u16(loading_bar.t_bar.len, change.bottom, type_change);
+                crate::generic_to_u16(loading_bar.t_bar.len, change.bottom, type_change);
             loading_bar.print();
-            std::thread::spawn(move || {
+            thread::spawn(move || {
                 for _ in 0..(loading_bar.t_bar.space_left) {
                     total += 1;
                     if top.contains_key(&total) {
@@ -570,34 +567,12 @@ mod auto_run {
                     }
 
                     loading_bar.advance();
-                    std::thread::sleep(std::time::Duration::from_secs_f32(index));
+                    thread::sleep(Duration::from_secs_f32(index));
                     loading_bar.print()
                 }
             });
         }
     }
-}
-
-pub fn generic_to_u16<T, U>(len: u16, change: HashMap<T, U>, type_of: Types) -> HashMap<u16, U>
-where
-    T: Copy + fmt::Debug,
-    U: fmt::Debug + Clone,
-    u16: From<T>,
-    f32: From<T>,
-{
-    let mut change_color = HashMap::new();
-    if Types::Percent == type_of {
-        for (key, value) in change.iter() {
-            let key: u16 = (len as f32 * f32::from(*key) / 100.0) as u16;
-            change_color.insert(key, value.clone());
-        }
-    } else {
-        for (key, value) in change.iter() {
-            let change_key: u16 = u16::from(*key);
-            change_color.insert(change_key, value.clone());
-        }
-    }
-    change_color
 }
 
 mod change_at {
