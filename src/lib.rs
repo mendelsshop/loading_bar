@@ -349,41 +349,27 @@ mod auto_run {
                 }
             });
         }
-        pub fn auto_run_change_points<T, U>(
+        pub fn auto_run_change_points(
+            change: HashMap<u16, Option<Color>>,
             time_in_seconds: u16,
             len: u16,
             start: u16,
             start_pos: (u16, u16),
-            change: HashMap<T, U>,
-            type_change: Types,
-        ) where
-            T: Copy + fmt::Debug,
-            u16: From<T>,
-            f32: From<T>,
-            U: Copy + fmt::Debug + marker::Send + 'static,
-            Option<Color>: From<U>,
-        {
+        ) {
             if start >= len {
                 println!();
                 panic!("\x07start must be less than len\x07");
             }
-            let mut self_clone = LoadingBar {
-                len,
-                index: start,
-                done: false,
-                color: None,
-                space_left: len - start,
-                half: false,
-                start_pos,
-            };
+            let mut self_clone = LoadingBar::new(len, None, start_pos);
             self_clone.advance_by(start);
             LoadingBar::auto_run_from_change_points(
                 self_clone,
                 change,
                 time_in_seconds,
-                type_change,
+                Types::Index,
             )
         }
+
         pub fn auto_run_from_change(
             loading_bar: LoadingBar,
             change: Vec<Option<Color>>,
