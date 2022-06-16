@@ -461,71 +461,54 @@ mod auto_run {
         }
 
         pub fn auto_run_from_change(
-            mut text_loading_bar: TextLoadingBar,
+            text_loading_bar: TextLoadingBar,
             option: TextLoadingBarAutoOptions,
             time_in_seconds: u16,
         ) {
-            let index = time_in_seconds as f32 / (text_loading_bar.t_bar.space_left + 1) as f32;
-            // / get the length of each vector from the option struct
             let (top_len, bottom_len, bar_color_len, top_color_len, bottom_color_len) =
                 option.get_len();
             // find the the bar index(s) for each variable we just took from the option struct
-            let mut total = text_loading_bar.t_bar.len - (text_loading_bar.t_bar.space_left);
-            let bottom_color = crate::get_index_and_value(
-                bottom_color_len,
-                text_loading_bar.t_bar.space_left + 1,
-                text_loading_bar.t_bar.len,
-                &option.bottom,
-            );
-            let top_color = crate::get_index_and_value(
-                top_color_len,
-                text_loading_bar.t_bar.space_left + 1,
-                text_loading_bar.t_bar.len,
-                &option.top,
-            );
-            let top = crate::get_index_and_value(
-                top_len,
-                text_loading_bar.t_bar.space_left + 1,
-                text_loading_bar.t_bar.len,
-                &option.top_text,
-            );
-            let bottom = crate::get_index_and_value(
-                bottom_len,
-                text_loading_bar.t_bar.space_left + 1,
-                text_loading_bar.t_bar.len,
-                &option.bottom_text,
-            );
-            let bar_color = crate::get_index_and_value(
-                bar_color_len,
-                text_loading_bar.t_bar.space_left + 1,
-                text_loading_bar.t_bar.len,
-                &option.bar,
-            );
-            text_loading_bar.print();
-            thread::spawn(move || {
-                for _ in 0..(text_loading_bar.t_bar.space_left) {
-                    if bar_color.contains_key(&total) {
-                        text_loading_bar.t_bar.color = bar_color[&total];
-                    }
-                    if top_color.contains_key(&total) {
-                        text_loading_bar.top_text.color = top_color[&total];
-                    }
-                    if bottom_color.contains_key(&total) {
-                        text_loading_bar.bottom_text.color = bottom_color[&total];
-                    }
-                    if top.contains_key(&total) {
-                        text_loading_bar.top_text.text = String::from(&top[&total]);
-                    }
-                    if bottom.contains_key(&total) {
-                        text_loading_bar.bottom_text.text = String::from(&bottom[&total]);
-                    }
-                    text_loading_bar.advance();
-                    thread::sleep(Duration::from_secs_f32(index));
-                    text_loading_bar.print();
-                    total += 1;
-                }
-            });
+
+            let change = TextLoadingBarAutoPoint {
+                bottom: crate::get_index_and_value(
+                    bottom_color_len,
+                    text_loading_bar.t_bar.space_left + 1,
+                    text_loading_bar.t_bar.len,
+                    &option.bottom,
+                ),
+                top: crate::get_index_and_value(
+                    top_color_len,
+                    text_loading_bar.t_bar.space_left + 1,
+                    text_loading_bar.t_bar.len,
+                    &option.top,
+                ),
+                top_text: crate::get_index_and_value(
+                    top_len,
+                    text_loading_bar.t_bar.space_left + 1,
+                    text_loading_bar.t_bar.len,
+                    &option.top_text,
+                ),
+                bottom_text: crate::get_index_and_value(
+                    bottom_len,
+                    text_loading_bar.t_bar.space_left + 1,
+                    text_loading_bar.t_bar.len,
+                    &option.bottom_text,
+                ),
+                bar: crate::get_index_and_value(
+                    bar_color_len,
+                    text_loading_bar.t_bar.space_left + 1,
+                    text_loading_bar.t_bar.len,
+                    &option.bar,
+                ),
+            };
+            TextLoadingBar::auto_run_from_change_points(
+                text_loading_bar,
+                change,
+                time_in_seconds,
+                crate::Types::Index,
+            )
         }
+
         pub fn auto_run_from_change_points<T>(
             mut loading_bar: TextLoadingBar,
             change: TextLoadingBarAutoPoint<T>,
