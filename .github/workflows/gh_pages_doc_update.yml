@@ -72,9 +72,8 @@ jobs:
       - uses: EndBug/add-and-commit@v9
         with:
           message: "Update docs"
-          branch: gh-pages
           push: true
           cwd: "loading_bar"
-          add: "loading_bar"
+          add: "."
           committer_name: "github-actions"
           committer_email: "actions@github.com"
