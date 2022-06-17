@@ -7,7 +7,7 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
-  pull_request:
+  merge:
     branches: [ "main" ]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -40,7 +40,7 @@ jobs:
           ls
           cp -r target/doc ../gh-pages/
           cd ..
-          git clone -b gh-pages --single-branch git clone -b opencv-2.4 --single-branch https://github.com/mendelsshop/loading_bar.git
+          git clone --single-branch --branch gh-pages https://github.com/mendelsshop/loading_bar.git
           ls
           cp -r loading_bar/target/doc ../gh-pages/
           git add -A
