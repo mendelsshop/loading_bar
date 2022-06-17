@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Color","The 8 standard colors."],["Types","The type of change that is being made to the loading element (percentage or number)"]],"mod":[["loading_bar",""],["text_loading_bar",""]]});
+initSidebarItems({"enum":[["Color","The 8 standard colors."],["Types","The type of change that is being made to the loading element (percentage or number)"]],"mod":[["loading_bar",""],["simple_loading_bar",""],["text_loading_bar",""]]});

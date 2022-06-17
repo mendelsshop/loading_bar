@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["SimpleLoadingBar","like a loading bar, but only uses `'\\r'` instead of `crossterm::cursor` to update the loading bar This may makeit easeir to use especially when scrolling is involved Nothing else can be printed to the same shell/terminal while it is running or else you might get weird results"]]});

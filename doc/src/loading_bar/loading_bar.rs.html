@@ -482,19 +482,19 @@
         <span class="self">self</span>.<span class="ident">print</span>();
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">advance</span>(<span class="self">self</span>: <span class="kw-2">&amp;mut</span> <span class="ident">LoadingBar</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">advance</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">adv_index</span>(<span class="number">1</span>);
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">advance_print</span>(<span class="self">self</span>: <span class="kw-2">&amp;mut</span> <span class="ident">LoadingBar</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">advance_print</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">adv_index_print</span>(<span class="number">1</span>);
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">advance_by</span>(<span class="self">self</span>: <span class="kw-2">&amp;mut</span> <span class="ident">LoadingBar</span>, <span class="ident">index</span>: <span class="ident">u16</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">advance_by</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u16</span>) {
         <span class="self">self</span>.<span class="ident">adv_index</span>(<span class="ident">index</span>);
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">advance_by_print</span>(<span class="self">self</span>: <span class="kw-2">&amp;mut</span> <span class="ident">LoadingBar</span>, <span class="ident">index</span>: <span class="ident">u16</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">advance_by_print</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u16</span>) {
         <span class="self">self</span>.<span class="ident">adv_index_print</span>(<span class="ident">index</span>);
     }
 
@@ -532,11 +532,11 @@
         <span class="self">self</span>.<span class="ident">goline_clear_print</span>()
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_color</span>(<span class="self">self</span>: <span class="kw-2">&amp;mut</span> <span class="ident">LoadingBar</span>, <span class="ident">color</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">colored::Color</span><span class="op">&gt;</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_color</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">color</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">colored::Color</span><span class="op">&gt;</span>) {
         <span class="self">self</span>.<span class="ident">color</span> <span class="op">=</span> <span class="ident">color</span>;
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_color_print</span>(<span class="self">self</span>: <span class="kw-2">&amp;mut</span> <span class="ident">LoadingBar</span>, <span class="ident">color</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">colored::Color</span><span class="op">&gt;</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_color_print</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">color</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">colored::Color</span><span class="op">&gt;</span>) {
         <span class="self">self</span>.<span class="ident">change_color</span>(<span class="ident">color</span>);
         <span class="self">self</span>.<span class="ident">goline_clear_print</span>()
     }
