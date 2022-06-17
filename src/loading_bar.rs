@@ -239,9 +239,8 @@ impl fmt::Display for LoadingBar {
 }
 
 mod auto_run {
-    use crate::Types;
-
-    use super::{Color, LoadingBar};
+    use super::LoadingBar;
+    use crate::{Color, Types};
     use std::{collections::HashMap, fmt, marker, thread, time::Duration};
 
     /// # these methods/functions are used to auomatically generate and or update the loading bar

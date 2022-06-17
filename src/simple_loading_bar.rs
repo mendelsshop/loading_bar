@@ -16,21 +16,14 @@ pub struct SimpleLoadingBar {
 }
 
 impl SimpleLoadingBar {
-    pub fn new(
-        len: u16,
-        index: u16,
-        done: bool,
-        color: Option<colored::Color>,
-        space_left: u16,
-        half: bool,
-    ) -> SimpleLoadingBar {
+    pub fn new(len: u16, color: Option<colored::Color>) -> SimpleLoadingBar {
         SimpleLoadingBar {
             len,
-            index,
-            done,
+            index: 0,
+            done: false,
             color,
-            space_left,
-            half,
+            space_left: len,
+            half: false,
         }
     }
     pub fn print(&self) {
@@ -132,5 +125,125 @@ impl Display for SimpleLoadingBar {
             "[\r{}]",
             bar.color(self.color.unwrap_or(colored::Color::White)) // if we have a color, use it, otherwise use white
         )
+    }
+}
+
+mod auto_run {
+    use crate::{Color, Types};
+
+    use super::SimpleLoadingBar;
+    use std::{collections::HashMap, fmt, marker, thread, time::Duration};
+
+    impl SimpleLoadingBar {
+        pub fn auto_run(time_in_seconds: u16, len: u16, start: u16, color: Option<colored::Color>) {
+            if start >= len {
+                println!();
+                panic!("\x07start must be less than len\x07");
+            }
+            // find the amount of time that has per incremen
+            let self_clone = SimpleLoadingBar {
+                len,
+                index: start,
+                done: false,
+                color,
+                space_left: len - start,
+                half: false,
+            };
+            SimpleLoadingBar::auto_run_from(self_clone, time_in_seconds)
+        }
+        pub fn auto_run_change(
+            change: Vec<Option<Color>>,
+            time_in_seconds: u16,
+            len: u16,
+            start: u16,
+        ) {
+            if start >= len {
+                println!();
+                panic!("\x07start must be less than len\x07");
+            }
+            let mut self_clone = SimpleLoadingBar::new(len, change[0]);
+            self_clone.advance_by(start);
+            SimpleLoadingBar::auto_run_from_change(self_clone, change, time_in_seconds)
+        }
+
+        pub fn auto_run_change_points(
+            change: HashMap<u16, Option<Color>>,
+            time_in_seconds: u16,
+            len: u16,
+            start: u16,
+        ) {
+            if start >= len {
+                println!();
+                panic!("\x07start must be less than len\x07");
+            }
+            let mut self_clone = SimpleLoadingBar::new(len, None);
+            self_clone.advance_by(start);
+            SimpleLoadingBar::auto_run_from_change_points(
+                self_clone,
+                change,
+                time_in_seconds,
+                Types::Index,
+            )
+        }
+
+        pub fn auto_run_from(mut loading_bar: SimpleLoadingBar, time_in_seconds: u16) {
+            let index = time_in_seconds as f32 / (loading_bar.space_left + 1) as f32;
+            loading_bar.print();
+            thread::spawn(move || {
+                for _ in 0..(loading_bar.space_left) {
+                    loading_bar.advance_print();
+                    thread::sleep(Duration::from_secs_f32(index));
+                }
+            });
+        }
+        pub fn auto_run_from_change(
+            loading_bar: SimpleLoadingBar,
+            change: Vec<Option<Color>>,
+            time_in_seconds: u16,
+        ) {
+            let change_len = change.len() as u16;
+            crate::get_indexes(change_len, loading_bar.space_left + 1, loading_bar.len);
+            let change_color = crate::get_index_and_value(
+                change_len,
+                loading_bar.space_left + 1,
+                loading_bar.len,
+                &change,
+            );
+            SimpleLoadingBar::auto_run_from_change_points(
+                loading_bar,
+                change_color,
+                time_in_seconds,
+                Types::Index,
+            )
+        }
+        pub fn auto_run_from_change_points<T, U>(
+            mut loading_bar: SimpleLoadingBar,
+            change: HashMap<T, U>,
+            time_in_seconds: u16,
+            type_change: Types,
+        ) where
+            T: Copy + fmt::Debug,
+            u16: From<T>,
+            f32: From<T>,
+            U: Copy + fmt::Debug + marker::Send + 'static,
+            Option<Color>: From<U>,
+        {
+            let index = time_in_seconds as f32 / (loading_bar.space_left + 1) as f32;
+            let mut total = loading_bar.len - (loading_bar.space_left);
+            let new_hash = crate::generic_to_u16(loading_bar.len, change, type_change);
+            loading_bar.print();
+            thread::spawn(move || {
+                for _ in 0..(loading_bar.space_left) {
+                    total += 1;
+                    if new_hash.contains_key(&total) {
+                        loading_bar.color = Option::<Color>::from(new_hash[&total]);
+                    }
+
+                    loading_bar.advance();
+                    thread::sleep(Duration::from_secs_f32(index));
+                    loading_bar.print()
+                }
+            });
+        }
     }
 }
