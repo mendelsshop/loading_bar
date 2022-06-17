@@ -1,3 +1,4 @@
+//! Home of the loading bar crate.
 pub use colored::Color;
 use std::{collections::HashMap, fmt};
 pub mod loading_bar;

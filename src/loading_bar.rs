@@ -1,3 +1,4 @@
+//! Home of the LoadingBar methods and its associated structs and enums.
 use colored::{Color, Colorize};
 use crossterm::cursor::{RestorePosition, SavePosition};
 

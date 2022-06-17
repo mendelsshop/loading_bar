@@ -6,3 +6,4 @@
 - have change at type functions that will change something text or color at a certain index or percent of the loading bar
 - have default auto run functions that can be used will have extra parameters that can be used to set starting colors and texts, etc.
 - autorun function that stop at a certain percent or index, and retrun the textloadingbar or loadingbar that was used
+- have fields that can set the ▉ to a different character and to set the last character to a different character ie having something like `[======>   ]`

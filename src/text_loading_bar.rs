@@ -1,3 +1,5 @@
+//! Home of the TextLoadingBar methods and its associated structs and enums.
+
 use std::{
     collections::HashMap,
     fmt::{self, Display},
