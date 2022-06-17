@@ -36,7 +36,8 @@ jobs:
         run: |
           cp -r target/doc ../gh-pages/
           git checkout -b gh-pages
-          ls
+          ls ..
+          git clean -df
           cp -rf ../gh-pages/doc .
           git add -A
           git commit -m "Update docs"
