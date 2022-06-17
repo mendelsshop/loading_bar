@@ -55,6 +55,12 @@ jobs:
           echo "listing gh-pages dir"
           cp -rf ../gh_pages/* doc
           echo "copied docs to gh-pages branch"
+
+      - name: configure git
+        run: |
+          git config user.name github-actions'
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          g
       - name: commit gh_pages
         run: |
           cd loading_bar
