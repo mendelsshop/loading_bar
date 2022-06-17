@@ -40,4 +40,5 @@ jobs:
           ls ../gh_pages
           cp -rf ../gh_pages/* doc
           git add -A
+          echo "Updateing gh-pages"
           git commit -m "Update docs"
