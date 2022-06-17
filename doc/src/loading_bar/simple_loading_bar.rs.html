@@ -138,11 +138,13 @@
 <span id="133">133</span>
 <span id="134">134</span>
 <span id="135">135</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::fmt::Display</span>;
+<span id="136">136</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Home of the SimpleLoadingBar methods and its associated structs and enums.</span>
+<span class="kw">use</span> <span class="ident">std::fmt::Display</span>;
 
 <span class="kw">use</span> <span class="ident">colored::Colorize</span>;
 
-<span class="doccomment">/// like a loading bar, but only uses `&#39;\r&#39;` instead of `crossterm::cursor` to update the loading bar</span>
+<span class="doccomment">/// like a LoadingBar, but only uses `&#39;\r&#39;` instead of `crossterm::cursor` to update the loading bar</span>
 <span class="doccomment">/// This may makeit easeir to use especially when scrolling is involved</span>
 <span class="doccomment">/// Nothing else can be printed to the same shell/terminal while it is running or else you might get weird results</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SimpleLoadingBar</span> {
