@@ -63,7 +63,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: commit gh_pages
         env:
-          GITHUB_TOKEN: ${{ secrets.Private }}
+          GITHUB_TOKEN: ${{ secrets.PUSH_TOKEN }}
         run: |
           cd loading_bar
           git add -A
