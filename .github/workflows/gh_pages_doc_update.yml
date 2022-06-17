@@ -72,5 +72,5 @@ jobs:
           echo "Pushing to gh-pages"
           git remote set-url --push origin https://mendelsshop:$GITHUB_TOKEN@github.com/loading_bar
           git branch 
-          # git push origin gh-pages
+          git push origin gh-pages
 
