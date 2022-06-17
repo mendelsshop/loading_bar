@@ -33,9 +33,9 @@ Or the following if you want to test the latest features:
 # LoadingBar
 ## You can create a progress bar with the following code:
 ```rust
-use loading_bar::LoadingBar;
+use loading_bar::loading_bar::LoadingBar;
 
-use loading_bar::{LoadingBar, Color}; // if you want to use the color feature
+use loading_bar::{loading_bar::LoadingBar, Color}; // if you want to use the color feature
 
 bar = LoadingBar::new(100, None, (0, 0)); // this creates a new loading bar with 100 steps and the default color at position 0,0
 

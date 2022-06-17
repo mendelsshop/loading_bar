@@ -4,10 +4,11 @@ use std::{
     io::stdout,
 };
 
-use crate::{Color, LoadingBar};
+use crate::loading_bar::LoadingBar;
 pub use auto_run::{TextLoadingBarAutoOptions, TextLoadingBarAutoPoint};
-use colored::Colorize;
+pub use colored::Color;
 
+use colored::Colorize;
 use crossterm::{
     cursor::{MoveTo, RestorePosition, SavePosition},
     execute,
@@ -294,7 +295,7 @@ mod auto_run {
 
     use colored::Color;
 
-    use crate::text_loading_bar::TextLoadingBar;
+    use crate::{text_loading_bar::TextLoadingBar, Types};
     #[derive(Debug)]
     pub struct TextLoadingBarAutoOptions {
         pub top_text: Vec<String>,
@@ -422,7 +423,7 @@ mod auto_run {
             start: u16,
             start_pos: (u16, u16),
             change: TextLoadingBarAutoPoint<T>,
-            type_change: crate::Types,
+            type_change: Types,
         ) where
             T: Copy + fmt::Debug,
             u16: From<T>,
@@ -505,7 +506,7 @@ mod auto_run {
                 text_loading_bar,
                 change,
                 time_in_seconds,
-                crate::Types::Index,
+                Types::Index,
             )
         }
 
@@ -513,7 +514,7 @@ mod auto_run {
             mut loading_bar: TextLoadingBar,
             change: TextLoadingBarAutoPoint<T>,
             time_in_seconds: u16,
-            type_change: crate::Types,
+            type_change: Types,
         ) where
             T: Copy + fmt::Debug,
             u16: From<T>,
