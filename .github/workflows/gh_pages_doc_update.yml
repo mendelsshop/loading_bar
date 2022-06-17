@@ -38,3 +38,10 @@ jobs:
       - name: Run a multi-line script
         run: |
           ls
+          cp -r target/doc ../gh-pages/
+          cd ..
+          git clone -b gh-pages --single-branch git clone -b opencv-2.4 --single-branch https://github.com/mendelsshop/loading_bar.git
+          ls
+          cp -r loading_bar/target/doc ../gh-pages/
+          git add -A
+          git commit -m "Update docs"
