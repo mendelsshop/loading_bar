@@ -1,6 +1,7 @@
 pub use colored::Color;
 use std::{collections::HashMap, fmt};
 pub mod loading_bar;
+pub mod simple_loading_bar;
 pub mod text_loading_bar;
 
 #[derive(PartialEq, Clone, Copy)]

@@ -13,7 +13,7 @@ And different ways to advance the loading bar.
 <br>
 [LoadingBar](https://github.com/mendelsshop/loading_bar#LoadingBar),
 [TextLoadingBar](https://github.com/mendelsshop/loading_bar#TextLoadingBar) 
-
+[SimpleLoadingBar](https://github.com/mendelsshop/loading_bar#SimpleLoadingBar)
 
 ## Installation:
 Put the following in your Cargo.toml file under `[dependencies]`: 
@@ -86,9 +86,10 @@ bar.auto_run_from(bar, 10); // this takes ownership of the bar and increments au
 
 # TextLoadingBar
 Not documented yet.
+# SimpleLoadingBar
+Not documented yet.
 # Notes:
 - color documentation and source can be found at https://docs.rs/colored/2.0.0/colored/enum.Color.html.
-
 - This uses the [`crossterm`](https://docs.rs/crossterm/latest/crossterm/) crate, so when using this crate you should understand how to use the aforementioned crate (and possibly import and use it for resseting the lines).
 
 # Credits:

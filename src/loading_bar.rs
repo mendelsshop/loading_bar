@@ -98,19 +98,19 @@ impl LoadingBar {
         self.print();
     }
 
-    pub fn advance(self: &mut LoadingBar) {
+    pub fn advance(&mut self) {
         self.adv_index(1);
     }
 
-    pub fn advance_print(self: &mut LoadingBar) {
+    pub fn advance_print(&mut self) {
         self.adv_index_print(1);
     }
 
-    pub fn advance_by(self: &mut LoadingBar, index: u16) {
+    pub fn advance_by(&mut self, index: u16) {
         self.adv_index(index);
     }
 
-    pub fn advance_by_print(self: &mut LoadingBar, index: u16) {
+    pub fn advance_by_print(&mut self, index: u16) {
         self.adv_index_print(index);
     }
 
@@ -148,11 +148,11 @@ impl LoadingBar {
         self.goline_clear_print()
     }
 
-    pub fn change_color(self: &mut LoadingBar, color: Option<colored::Color>) {
+    pub fn change_color(&mut self, color: Option<colored::Color>) {
         self.color = color;
     }
 
-    pub fn change_color_print(self: &mut LoadingBar, color: Option<colored::Color>) {
+    pub fn change_color_print(&mut self, color: Option<colored::Color>) {
         self.change_color(color);
         self.goline_clear_print()
     }
