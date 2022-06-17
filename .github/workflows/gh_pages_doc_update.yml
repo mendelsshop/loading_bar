@@ -38,6 +38,9 @@ jobs:
           echo "made gh_pages dir"
           cp -r target/doc ../gh_pages/
           echo "copied docs to temp dir"
+          git checkout gh-pages
+          echo "switched to gh-pages branch"
+          ls -la
           git switch gh-pages
           echo "switched to gh-pages branch"
           ls ../gh_pages
