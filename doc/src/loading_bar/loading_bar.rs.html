@@ -382,7 +382,6 @@
 <span id="377">377</span>
 <span id="378">378</span>
 <span id="379">379</span>
-<span id="380">380</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Home of the LoadingBar methods and its associated structs and enums.</span>
 <span class="kw">use</span> <span class="ident">colored</span>::{<span class="ident">Color</span>, <span class="ident">Colorize</span>};
 <span class="kw">use</span> <span class="ident">crossterm::cursor</span>::{<span class="ident">RestorePosition</span>, <span class="ident">SavePosition</span>};
@@ -624,9 +623,8 @@
 }
 
 <span class="kw">mod</span> <span class="ident">auto_run</span> {
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Types</span>;
-
-    <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">Color</span>, <span class="ident">LoadingBar</span>};
+    <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::LoadingBar</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Color</span>, <span class="ident">Types</span>};
     <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::HashMap</span>, <span class="ident">fmt</span>, <span class="ident">marker</span>, <span class="ident">thread</span>, <span class="ident">time::Duration</span>};
 
     <span class="doccomment">/// # these methods/functions are used to auomatically generate and or update the loading bar</span>
