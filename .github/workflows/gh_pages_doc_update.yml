@@ -44,12 +44,10 @@ jobs:
           cd loading_bar
           mkdir ../gh_pages
           echo "made gh_pages dir"
-          cp -r target/doc ../gh_pages/
+          cp -r target/doc/* ../gh_pages/
           echo "copied docs to temp dir"
-          git checkout gh-pages
-          echo "switched to gh-pages branch"
-          ls -la
           git switch gh-pages
+          ls -la
           echo "switched to gh-pages branch"
           ls ../gh_pages
           echo "listing gh-pages dir"
