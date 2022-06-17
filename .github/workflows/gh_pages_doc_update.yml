@@ -56,16 +56,25 @@ jobs:
           cp -rf ../gh_pages/* doc
           echo "copied docs to gh-pages branch"
 
-      - name: configure git
-        run: |
-          cd loading_bar
-          git config user.name "github-actions"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      - name: commit gh_pages
-        run: |
-          cd loading_bar
-          git add -A
-          echo "Updateing gh-pages"
-          git commit -m "Update docs"
-          echo "Pushing to gh-pages"
-          git push origin gh-pages
+      # - name: configure git
+      #   run: |
+      #     cd loading_bar
+      #     git config user.name "github-actions"
+      #     git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      # - name: commit gh_pages
+      #   run: |
+      #     cd loading_bar
+      #     git add -A
+      #     echo "Updateing gh-pages"
+      #     git commit -m "Update docs"
+      #     echo "Pushing to gh-pages"
+      #     git push origin gh-pages
+      - uses: EndBug/add-and-commit@v9
+        with:
+          message: "Update docs"
+          branch: gh-pages
+          push: true
+          cwd: "loading_bar"
+          add: "loading_bar"
+          committer_name: "github-actions"
+          committer_email: "actions@github.com"
