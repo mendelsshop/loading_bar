@@ -569,16 +569,18 @@
 <span id="564">564</span>
 <span id="565">565</span>
 <span id="566">566</span>
+<span id="567">567</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">collections::HashMap</span>,
     <span class="ident">fmt</span>::{<span class="self">self</span>, <span class="ident">Display</span>},
     <span class="ident">io::stdout</span>,
 };
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Color</span>, <span class="ident">LoadingBar</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::loading_bar::LoadingBar</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">auto_run</span>::{<span class="ident">TextLoadingBarAutoOptions</span>, <span class="ident">TextLoadingBarAutoPoint</span>};
-<span class="kw">use</span> <span class="ident">colored::Colorize</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">colored::Color</span>;
 
+<span class="kw">use</span> <span class="ident">colored::Colorize</span>;
 <span class="kw">use</span> <span class="ident">crossterm</span>::{
     <span class="ident">cursor</span>::{<span class="ident">MoveTo</span>, <span class="ident">RestorePosition</span>, <span class="ident">SavePosition</span>},
     <span class="ident">execute</span>,
@@ -865,7 +867,7 @@
 
     <span class="kw">use</span> <span class="ident">colored::Color</span>;
 
-    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::text_loading_bar::TextLoadingBar</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">text_loading_bar::TextLoadingBar</span>, <span class="ident">Types</span>};
     <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TextLoadingBarAutoOptions</span> {
         <span class="kw">pub</span> <span class="ident">top_text</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
@@ -993,7 +995,7 @@
             <span class="ident">start</span>: <span class="ident">u16</span>,
             <span class="ident">start_pos</span>: (<span class="ident">u16</span>, <span class="ident">u16</span>),
             <span class="ident">change</span>: <span class="ident">TextLoadingBarAutoPoint</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-            <span class="ident">type_change</span>: <span class="ident"><span class="kw">crate</span>::Types</span>,
+            <span class="ident">type_change</span>: <span class="ident">Types</span>,
         ) <span class="kw">where</span>
             <span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">fmt::Debug</span>,
             <span class="ident">u16</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
@@ -1076,7 +1078,7 @@
                 <span class="ident">text_loading_bar</span>,
                 <span class="ident">change</span>,
                 <span class="ident">time_in_seconds</span>,
-                <span class="ident"><span class="kw">crate</span>::Types::Index</span>,
+                <span class="ident">Types::Index</span>,
             )
         }
 
@@ -1084,7 +1086,7 @@
             <span class="kw-2">mut</span> <span class="ident">loading_bar</span>: <span class="ident">TextLoadingBar</span>,
             <span class="ident">change</span>: <span class="ident">TextLoadingBarAutoPoint</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
             <span class="ident">time_in_seconds</span>: <span class="ident">u16</span>,
-            <span class="ident">type_change</span>: <span class="ident"><span class="kw">crate</span>::Types</span>,
+            <span class="ident">type_change</span>: <span class="ident">Types</span>,
         ) <span class="kw">where</span>
             <span class="ident">T</span>: <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">fmt::Debug</span>,
             <span class="ident">u16</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,

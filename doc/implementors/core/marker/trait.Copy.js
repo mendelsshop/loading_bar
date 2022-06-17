@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["loading_bar"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.61.0/core/marker/trait.Copy.html\" title=\"trait core::marker::Copy\">Copy</a> for <a class=\"enum\" href=\"loading_bar/enum.Types.html\" title=\"enum loading_bar::Types\">Types</a>","synthetic":false,"types":["loading_bar::auto_run::Types"]}];
+implementors["loading_bar"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.61.0/core/marker/trait.Copy.html\" title=\"trait core::marker::Copy\">Copy</a> for <a class=\"enum\" href=\"loading_bar/enum.Types.html\" title=\"enum loading_bar::Types\">Types</a>","synthetic":false,"types":["loading_bar::Types"]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

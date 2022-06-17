@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["TextLoadingBarOptions",""]],"struct":[["TextLoadingBar",""],["TextLoadingBarAutoOptions",""],["TextLoadingBarAutoPoint",""]]});
+initSidebarItems({"enum":[["Color","The 8 standard colors."],["TextLoadingBarOptions",""]],"struct":[["TextLoadingBar",""],["TextLoadingBarAutoOptions",""],["TextLoadingBarAutoPoint",""]]});
