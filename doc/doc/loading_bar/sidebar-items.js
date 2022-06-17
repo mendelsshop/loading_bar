@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Color","The 8 standard colors."],["LoadingBarOptions",""],["Types","The type of change that is being made to the loading element (percentage or number)"]],"mod":[["text_loading_bar",""]],"struct":[["LoadingBar",""]]});
