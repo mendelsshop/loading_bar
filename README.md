@@ -5,9 +5,9 @@
 # loading_bar 
 </div>
 
-[![crates.io](https://img.shields.io/crates/v/loading_bar.svg)](https://crates.io/crates/loading_bar)
-[![docs.rs](https://img.shields.io/docsrs/loading_bar)](https://docs.rs/loading_bar/latest/loading_bar)
-
+[![crates.io](https://img.shields.io/crates/v/loading_bar.svg?label=latest%20version)](https://crates.io/crates/loading_bar)
+[![docs.rs](https://img.shields.io/docsrs/loading_bar?logo=Docs.rs)](https://docs.rs/loading_bar/latest/loading_bar)
+[![Crates.io](https://img.shields.io/crates/d/loading_bar?label=crates.io%20downloads)](https://crates.io/crates/loading_bar)
 
 ## About:
 This my "Awesome" loading bar library.

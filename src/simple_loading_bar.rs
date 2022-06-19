@@ -13,6 +13,9 @@ pub struct SimpleLoadingBar {
     color: Option<colored::Color>,
     space_left: u16,
     half: bool,
+    character: char,
+    last_character: char,
+    bracket_color: Option<colored::Color>,
 }
 
 impl SimpleLoadingBar {
@@ -24,6 +27,9 @@ impl SimpleLoadingBar {
             color,
             space_left: len,
             half: false,
+            character: '\u{2589}',
+            last_character: '>',
+            bracket_color: None,
         }
     }
     pub fn print(&self) {
@@ -80,12 +86,39 @@ impl SimpleLoadingBar {
         self.print()
     }
 
+    pub fn change_character_type(&mut self, character: char) {
+        self.character = character;
+    }
+
+    pub fn change_character_type_print(&mut self, character: char) {
+        self.character = character;
+        self.print()
+    }
+
+    pub fn change_last_character(&mut self, character: char) {
+        self.last_character = character;
+    }
+
+    pub fn change_last_character_print(&mut self, character: char) {
+        self.last_character = character;
+        self.print()
+    }
+
     pub fn change_color(&mut self, color: Option<colored::Color>) {
         self.color = color;
     }
 
     pub fn change_color_print(&mut self, color: Option<colored::Color>) {
         self.change_color(color);
+        self.print()
+    }
+
+    pub fn change_bracket_color(&mut self, color: Option<colored::Color>) {
+        self.bracket_color = color;
+    }
+
+    pub fn change_bracket_color_print(&mut self, color: Option<colored::Color>) {
+        self.change_bracket_color(color);
         self.print()
     }
 
@@ -112,18 +145,28 @@ impl Display for SimpleLoadingBar {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut bar = String::new();
         for _ in 0..self.index {
-            bar.push('\u{2589}');
+            bar.push(self.character);
         }
-        if self.half {
-            bar.push('\u{258c}');
+        if !self.done {
+            bar.push(self.last_character);
+        } else {
+                bar.push(self.character);
         }
+
         for _ in self.index..self.len {
             bar.push(' ');
         }
         write!(
             f,
-            "[\r{}]",
-            bar.color(self.color.unwrap_or(colored::Color::White)) // if we have a color, use it, otherwise use white
+            "{}{}{}{}",
+            "[".color(self.bracket_color.unwrap_or(self.color.unwrap_or(colored::Color::White))),
+            bar.color(self.color.unwrap_or(colored::Color::White)), // if we have a color, use it, otherwise use white
+            "]".color(self.bracket_color.unwrap_or(self.color.unwrap_or(colored::Color::White))),
+            if self.done {
+                "\n".to_string()
+            } else {
+                "".to_string()
+            }
         )
     }
 }
@@ -148,6 +191,9 @@ mod auto_run {
                 color,
                 space_left: len - start,
                 half: false,
+                character: '\u{2589}',
+                last_character: '>',
+                bracket_color: None,
             };
             SimpleLoadingBar::auto_run_from(self_clone, time_in_seconds)
         }
@@ -186,38 +232,38 @@ mod auto_run {
             )
         }
 
-        pub fn auto_run_from(mut loading_bar: SimpleLoadingBar, time_in_seconds: u16) {
-            let index = time_in_seconds as f32 / (loading_bar.space_left + 1) as f32;
-            loading_bar.print();
+        pub fn auto_run_from(mut simpleloading_bar: SimpleLoadingBar, time_in_seconds: u16) {
+            let index = time_in_seconds as f32 / (simpleloading_bar.space_left + 1) as f32;
+            simpleloading_bar.print();
             thread::spawn(move || {
-                for _ in 0..(loading_bar.space_left) {
-                    loading_bar.advance_print();
+                for _ in 0..(simpleloading_bar.space_left) {
+                    simpleloading_bar.advance_print();
                     thread::sleep(Duration::from_secs_f32(index));
                 }
             });
         }
         pub fn auto_run_from_change(
-            loading_bar: SimpleLoadingBar,
+            simpleloading_bar: SimpleLoadingBar,
             change: Vec<Option<Color>>,
             time_in_seconds: u16,
         ) {
             let change_len = change.len() as u16;
-            crate::get_indexes(change_len, loading_bar.space_left + 1, loading_bar.len);
+            crate::get_indexes(change_len, simpleloading_bar.space_left + 1, simpleloading_bar.len);
             let change_color = crate::get_index_and_value(
                 change_len,
-                loading_bar.space_left + 1,
-                loading_bar.len,
+                simpleloading_bar.space_left + 1,
+                simpleloading_bar.len,
                 &change,
             );
             SimpleLoadingBar::auto_run_from_change_points(
-                loading_bar,
+                simpleloading_bar,
                 change_color,
                 time_in_seconds,
                 Types::Index,
             )
         }
         pub fn auto_run_from_change_points<T, U>(
-            mut loading_bar: SimpleLoadingBar,
+            mut simpleloading_bar: SimpleLoadingBar,
             change: HashMap<T, U>,
             time_in_seconds: u16,
             type_change: Types,
@@ -228,20 +274,20 @@ mod auto_run {
             U: Copy + fmt::Debug + marker::Send + 'static,
             Option<Color>: From<U>,
         {
-            let index = time_in_seconds as f32 / (loading_bar.space_left + 1) as f32;
-            let mut total = loading_bar.len - (loading_bar.space_left);
-            let new_hash = crate::generic_to_u16(loading_bar.len, change, type_change);
-            loading_bar.print();
+            let index = time_in_seconds as f32 / (simpleloading_bar.space_left + 1) as f32;
+            let mut total = simpleloading_bar.len - (simpleloading_bar.space_left);
+            let new_hash = crate::generic_to_u16(simpleloading_bar.len, change, type_change);
+            simpleloading_bar.print();
             thread::spawn(move || {
-                for _ in 0..(loading_bar.space_left) {
+                for _ in 0..(simpleloading_bar.space_left) {
                     total += 1;
                     if new_hash.contains_key(&total) {
-                        loading_bar.color = Option::<Color>::from(new_hash[&total]);
+                        simpleloading_bar.color = Option::<Color>::from(new_hash[&total]);
                     }
 
-                    loading_bar.advance();
+                    simpleloading_bar.advance();
                     thread::sleep(Duration::from_secs_f32(index));
-                    loading_bar.print()
+                    simpleloading_bar.print()
                 }
             });
         }
