@@ -419,6 +419,25 @@
 <span id="414">414</span>
 <span id="415">415</span>
 <span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Home of the LoadingBar methods and its associated structs and enums.</span>
 <span class="kw">use</span> <span class="ident">colored</span>::{<span class="ident">Color</span>, <span class="ident">Colorize</span>};
 <span class="kw">use</span> <span class="ident">crossterm::cursor</span>::{<span class="ident">RestorePosition</span>, <span class="ident">SavePosition</span>};
@@ -439,6 +458,7 @@
     <span class="ident">Number</span>(<span class="ident">u16</span>),
     <span class="ident">Float</span>(<span class="ident">f32</span>),
     <span class="ident">Pos</span>(<span class="ident">u16</span>, <span class="ident">u16</span>),
+    <span class="ident">Character</span>(<span class="ident">char</span>),
     <span class="prelude-val">None</span>,
 }
 
@@ -468,6 +488,12 @@
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">LoadingBarOptions::Pos</span>(<span class="ident">x</span>, <span class="ident">y</span>) =&gt; (<span class="kw-2">*</span><span class="ident">x</span>, <span class="kw-2">*</span><span class="ident">y</span>),
             <span class="kw">_</span> =&gt; (<span class="number">0</span>, <span class="number">0</span>),
+        }
+    }
+    <span class="kw">fn</span> <span class="ident">get_character</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">char</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">LoadingBarOptions::Character</span>(<span class="ident">character</span>) =&gt; <span class="kw-2">*</span><span class="ident">character</span>,
+            <span class="kw">_</span> =&gt; <span class="string">&#39; &#39;</span>,
         }
     }
 }
@@ -630,6 +656,7 @@
             <span class="kw">match</span> <span class="ident">key</span> {
                 <span class="string">&quot;color&quot;</span> =&gt; {
                     <span class="self">self</span>.<span class="ident">color</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">get_color</span>();
+                    <span class="self">self</span>.<span class="ident">bracket_color</span> <span class="op">=</span> <span class="ident">value</span>.<span class="ident">get_color</span>();
                 }
                 <span class="string">&quot;pos&quot;</span> =&gt; {
                     <span class="self">self</span>.<span class="ident">change_pos</span>(<span class="ident">value</span>.<span class="ident">get_pos</span>());
@@ -642,6 +669,18 @@
                 }
                 <span class="string">&quot;advance_by_percent&quot;</span> =&gt; {
                     <span class="self">self</span>.<span class="ident">advance_by_percent</span>(<span class="ident">value</span>.<span class="ident">get_float</span>());
+                }
+                <span class="string">&quot;last_character&quot;</span> =&gt; {
+                    <span class="self">self</span>.<span class="ident">change_last_character</span>(<span class="ident">value</span>.<span class="ident">get_character</span>());
+                }
+                <span class="string">&quot;character_type&quot;</span> =&gt; {
+                    <span class="self">self</span>.<span class="ident">change_character_type</span>(<span class="ident">value</span>.<span class="ident">get_character</span>());
+                }
+                <span class="string">&quot;bracket_color&quot;</span> =&gt; {
+                    <span class="self">self</span>.<span class="ident">change_bracket_color</span>(<span class="ident">value</span>.<span class="ident">get_color</span>());
+                }
+                <span class="string">&quot;change_bar_color&quot;</span> =&gt; {
+                    <span class="self">self</span>.<span class="ident">change_color</span>(<span class="ident">value</span>.<span class="ident">get_color</span>());
                 }
                 <span class="kw">_</span> =&gt; {
                     <span class="macro">panic!</span>(<span class="string">&quot;\x07{} is not a valid option\x07&quot;</span>, <span class="ident">key</span>);
@@ -722,8 +761,7 @@
                 <span class="ident">start_pos</span>,
                 <span class="ident">character</span>: <span class="string">&#39;\u{2589}&#39;</span>,
                 <span class="ident">last_character</span>: <span class="string">&#39;\u{258c}&#39;</span>,
-                <span class="ident">bracket_color</span>: <span class="prelude-val">None</span>
-
+                <span class="ident">bracket_color</span>: <span class="prelude-val">None</span>,
             };
             <span class="ident">LoadingBar::auto_run_from</span>(<span class="ident">self_clone</span>, <span class="ident">time_in_seconds</span>)
         }
