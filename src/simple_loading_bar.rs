@@ -67,7 +67,7 @@ impl SimpleLoadingBar {
             bracket_color: None,
         }
     }
-    pub fn print(&  self) {
+    pub fn print(&self) {
         print!("\r{}", self);
     }
 
