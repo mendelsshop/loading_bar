@@ -379,12 +379,6 @@
 <span id="374">374</span>
 <span id="375">375</span>
 <span id="376">376</span>
-<span id="377">377</span>
-<span id="378">378</span>
-<span id="379">379</span>
-<span id="380">380</span>
-<span id="381">381</span>
-<span id="382">382</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Home of the SimpleLoadingBar methods and its associated structs and enums.</span>
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::HashMap</span>, <span class="ident">fmt::Display</span>};
 
@@ -401,7 +395,7 @@
 <span class="kw">impl</span> <span class="ident">SimpleLoadingBarOptions</span> {
     <span class="kw">fn</span> <span class="ident">get_color</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Color</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">SimpleLoadingBarOptions::Color</span>(<span class="ident">color</span>) =&gt; <span class="ident">color</span>.<span class="ident">clone</span>(),
+            <span class="ident">SimpleLoadingBarOptions::Color</span>(<span class="ident">color</span>) =&gt; <span class="kw-2">*</span><span class="ident">color</span>,
             <span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
         }
     }
@@ -454,7 +448,7 @@
             <span class="ident">bracket_color</span>: <span class="prelude-val">None</span>,
         }
     }
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">print</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">print</span>(<span class="op">&amp;</span>  <span class="self">self</span>) {
         <span class="macro">print!</span>(<span class="string">&quot;\r{}&quot;</span>, <span class="self">self</span>);
     }
 
@@ -622,15 +616,9 @@
         <span class="macro">write!</span>(
             <span class="ident">f</span>,
             <span class="string">&quot;{}{}{}{}&quot;</span>,
-            <span class="string">&quot;[&quot;</span>.<span class="ident">color</span>(
-                <span class="self">self</span>.<span class="ident">bracket_color</span>
-                    .<span class="ident">unwrap_or</span>(<span class="self">self</span>.<span class="ident">color</span>.<span class="ident">unwrap_or</span>(<span class="ident">colored::Color::White</span>))
-            ),
+            <span class="string">&quot;[&quot;</span>.<span class="ident">color</span>(<span class="self">self</span>.<span class="ident">bracket_color</span>.<span class="ident">unwrap_or</span>(<span class="ident">colored::Color::White</span>)),
             <span class="ident">bar</span>.<span class="ident">color</span>(<span class="self">self</span>.<span class="ident">color</span>.<span class="ident">unwrap_or</span>(<span class="ident">colored::Color::White</span>)), <span class="comment">// if we have a color, use it, otherwise use white</span>
-            <span class="string">&quot;]&quot;</span>.<span class="ident">color</span>(
-                <span class="self">self</span>.<span class="ident">bracket_color</span>
-                    .<span class="ident">unwrap_or</span>(<span class="self">self</span>.<span class="ident">color</span>.<span class="ident">unwrap_or</span>(<span class="ident">colored::Color::White</span>))
-            ),
+            <span class="string">&quot;]&quot;</span>.<span class="ident">color</span>(<span class="self">self</span>.<span class="ident">bracket_color</span>.<span class="ident">unwrap_or</span>(<span class="ident">colored::Color::White</span>)),
             <span class="kw">if</span> <span class="self">self</span>.<span class="ident">done</span> {
                 <span class="string">&quot;\n&quot;</span>.<span class="ident">to_string</span>()
             } <span class="kw">else</span> {
