@@ -179,7 +179,6 @@ impl TextLoadingBar {
         }
 
         self.t_start_pos = t_start_pos;
-
     }
 
     pub fn change_bracket_color(&mut self, color: Option<colored::Color>) {

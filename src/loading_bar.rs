@@ -18,6 +18,7 @@ pub enum LoadingBarOptions {
     Number(u16),
     Float(f32),
     Pos(u16, u16),
+    Character(char),
     None,
 }
 
@@ -47,6 +48,12 @@ impl LoadingBarOptions {
         match self {
             LoadingBarOptions::Pos(x, y) => (*x, *y),
             _ => (0, 0),
+        }
+    }
+    fn get_character(&self) -> char {
+        match self {
+            LoadingBarOptions::Character(character) => *character,
+            _ => ' ',
         }
     }
 }
@@ -209,6 +216,7 @@ impl LoadingBar {
             match key {
                 "color" => {
                     self.color = value.get_color();
+                    self.bracket_color = value.get_color();
                 }
                 "pos" => {
                     self.change_pos(value.get_pos());
@@ -221,6 +229,18 @@ impl LoadingBar {
                 }
                 "advance_by_percent" => {
                     self.advance_by_percent(value.get_float());
+                }
+                "last_character" => {
+                    self.change_last_character(value.get_character());
+                }
+                "character_type" => {
+                    self.change_character_type(value.get_character());
+                }
+                "bracket_color" => {
+                    self.change_bracket_color(value.get_color());
+                }
+                "change_bar_color" => {
+                    self.change_color(value.get_color());
                 }
                 _ => {
                     panic!("\x07{} is not a valid option\x07", key);
@@ -301,8 +321,7 @@ mod auto_run {
                 start_pos,
                 character: '\u{2589}',
                 last_character: '\u{258c}',
-                bracket_color: None
-
+                bracket_color: None,
             };
             LoadingBar::auto_run_from(self_clone, time_in_seconds)
         }

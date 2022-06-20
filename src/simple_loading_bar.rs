@@ -1,7 +1,42 @@
 //! Home of the SimpleLoadingBar methods and its associated structs and enums.
-use std::fmt::Display;
+use std::{collections::HashMap, fmt::Display};
 
-use colored::Colorize;
+use colored::{Color, Colorize};
+
+pub enum SimpleLoadingBarOptions {
+    Color(Option<Color>),
+    Number(u16),
+    Float(f32),
+    Characters(char),
+    None,
+}
+
+impl SimpleLoadingBarOptions {
+    fn get_color(&self) -> Option<Color> {
+        match self {
+            SimpleLoadingBarOptions::Color(color) => color.clone(),
+            _ => None,
+        }
+    }
+    fn get_number(&self) -> u16 {
+        match self {
+            SimpleLoadingBarOptions::Number(number) => *number,
+            _ => 0,
+        }
+    }
+    fn get_float(&self) -> f32 {
+        match self {
+            SimpleLoadingBarOptions::Float(float) => *float,
+            _ => 0.0,
+        }
+    }
+    fn get_characters(&self) -> char {
+        match self {
+            SimpleLoadingBarOptions::Characters(characters) => *characters,
+            _ => ' ',
+        }
+    }
+}
 
 /// like a LoadingBar, but only uses `'\r'` instead of `crossterm::cursor` to update the loading bar.
 /// This may makeit easeir to use especially when scrolling is involved.
@@ -139,6 +174,47 @@ impl SimpleLoadingBar {
         self.adv_index(add_val);
         self.print();
     }
+
+    pub fn change(&mut self, options: HashMap<String, SimpleLoadingBarOptions>, print: bool) {
+        for (key, value) in options {
+            match key.as_str() {
+                "color" => {
+                    self.change_color(value.get_color());
+                    self.bracket_color = value.get_color();
+                }
+                "advance" => {
+                    self.advance();
+                }
+                "advance_by" => {
+                    self.advance_by(value.get_number());
+                }
+                "advance_by_percent" => {
+                    self.advance_by_percent(value.get_float());
+                }
+                "change_character_type" => {
+                    self.change_character_type(value.get_characters());
+                }
+                "change_last_character" => {
+                    self.change_last_character(value.get_characters());
+                }
+                "change_bar_color" => {
+                    self.change_color(value.get_color());
+                }
+                "change_bracket_color" => {
+                    self.change_bracket_color(value.get_color());
+                }
+                _ => {
+                    panic!(
+                        "\x07 {} is not a valid option for SimpleLoadingBar\x07",
+                        key
+                    );
+                }
+            }
+        }
+        if print {
+            self.print();
+        }
+    }
 }
 
 impl Display for SimpleLoadingBar {
@@ -150,7 +226,7 @@ impl Display for SimpleLoadingBar {
         if !self.done {
             bar.push(self.last_character);
         } else {
-                bar.push(self.character);
+            bar.push(self.character);
         }
 
         for _ in self.index..self.len {
@@ -159,9 +235,15 @@ impl Display for SimpleLoadingBar {
         write!(
             f,
             "{}{}{}{}",
-            "[".color(self.bracket_color.unwrap_or(self.color.unwrap_or(colored::Color::White))),
+            "[".color(
+                self.bracket_color
+                    .unwrap_or(self.color.unwrap_or(colored::Color::White))
+            ),
             bar.color(self.color.unwrap_or(colored::Color::White)), // if we have a color, use it, otherwise use white
-            "]".color(self.bracket_color.unwrap_or(self.color.unwrap_or(colored::Color::White))),
+            "]".color(
+                self.bracket_color
+                    .unwrap_or(self.color.unwrap_or(colored::Color::White))
+            ),
             if self.done {
                 "\n".to_string()
             } else {
@@ -248,7 +330,11 @@ mod auto_run {
             time_in_seconds: u16,
         ) {
             let change_len = change.len() as u16;
-            crate::get_indexes(change_len, simpleloading_bar.space_left + 1, simpleloading_bar.len);
+            crate::get_indexes(
+                change_len,
+                simpleloading_bar.space_left + 1,
+                simpleloading_bar.len,
+            );
             let change_color = crate::get_index_and_value(
                 change_len,
                 simpleloading_bar.space_left + 1,
@@ -262,6 +348,7 @@ mod auto_run {
                 Types::Index,
             )
         }
+
         pub fn auto_run_from_change_points<T, U>(
             mut simpleloading_bar: SimpleLoadingBar,
             change: HashMap<T, U>,
