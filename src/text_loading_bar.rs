@@ -23,6 +23,7 @@ pub enum TextLoadingBarOptions {
     Color(Option<Color>),
     Number(u16),
     Float(f32),
+    Character(char),
     Pos(u16, u16),
     None,
 }
@@ -60,6 +61,12 @@ impl TextLoadingBarOptions {
         match self {
             TextLoadingBarOptions::Pos(x, y) => (*x, *y),
             _ => (0, 0),
+        }
+    }
+    fn get_character(&self) -> char {
+        match self {
+            TextLoadingBarOptions::Character(character) => *character,
+            _ => ' ',
         }
     }
 }
@@ -172,6 +179,34 @@ impl TextLoadingBar {
         }
 
         self.t_start_pos = t_start_pos;
+
+    }
+
+    pub fn change_bracket_color(&mut self, color: Option<colored::Color>) {
+        self.t_bar.change_bracket_color(color);
+    }
+
+    pub fn change_bracket_color_print(&mut self, color: Option<colored::Color>) {
+        self.t_bar.change_bracket_color(color);
+        self.goline_clear_print();
+    }
+
+    pub fn change_character_type(&mut self, character: char) {
+        self.t_bar.change_character_type(character);
+    }
+
+    pub fn change_character_type_print(&mut self, character: char) {
+        self.t_bar.change_character_type(character);
+        self.goline_clear_print();
+    }
+
+    pub fn change_last_character(&mut self, character: char) {
+        self.t_bar.change_last_character(character);
+    }
+
+    pub fn change_last_character_print(&mut self, character: char) {
+        self.t_bar.change_last_character(character);
+        self.goline_clear_print();
     }
 
     pub fn change_pos_print(&mut self, t_start_pos: (u16, u16)) {
@@ -199,10 +234,11 @@ impl TextLoadingBar {
         self.t_bar.color = color;
     }
 
-    pub fn change_all_text_colors(&mut self, color: Option<Color>) {
+    pub fn change_all_colors(&mut self, color: Option<Color>) {
         self.top_text.color = color;
         self.bottom_text.color = color;
         self.t_bar.color = color;
+        self.t_bar.change_bracket_color(color);
     }
 
     pub fn advance(&mut self) {
@@ -251,8 +287,8 @@ impl TextLoadingBar {
                 "bar_color" => {
                     self.change_bar_color(value.get_color());
                 }
-                "all_text_colors" => {
-                    self.change_all_text_colors(value.get_color());
+                "all_colors" => {
+                    self.change_all_colors(value.get_color());
                 }
                 "advance" => {
                     self.advance();
@@ -265,6 +301,15 @@ impl TextLoadingBar {
                 }
                 "change_pos" => {
                     self.change_pos(value.get_pos());
+                }
+                "change_character_type" => {
+                    self.change_character_type(value.get_character());
+                }
+                "change_last_character" => {
+                    self.change_last_character(value.get_character());
+                }
+                "change_bracket_color" => {
+                    self.change_bracket_color(value.get_color());
                 }
                 _ => {
                     panic!("\x07{}\x07 is not a valid key", key);

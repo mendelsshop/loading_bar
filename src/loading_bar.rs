@@ -60,6 +60,9 @@ pub struct LoadingBar {
     pub(super) space_left: u16,
     pub(super) half: bool,
     start_pos: (u16, u16),
+    pub(super) character: char,
+    pub(super) last_character: char,
+    pub(super) bracket_color: Option<colored::Color>,
 }
 
 /// # These methods are for basic loading bar creation and manipulation.
@@ -77,6 +80,9 @@ impl LoadingBar {
             space_left: len,
             half: false,
             start_pos,
+            character: '\u{2589}',
+            last_character: '\u{258c}',
+            bracket_color: None,
         }
     }
 
@@ -113,6 +119,33 @@ impl LoadingBar {
 
     pub fn advance_by_print(&mut self, index: u16) {
         self.adv_index_print(index);
+    }
+
+    pub fn change_character_type(&mut self, character: char) {
+        self.character = character;
+    }
+
+    pub fn change_last_character(&mut self, character: char) {
+        self.last_character = character;
+    }
+
+    pub fn change_bracket_color(&mut self, color: Option<colored::Color>) {
+        self.bracket_color = color;
+    }
+
+    pub fn change_bracket_color_print(&mut self, color: Option<colored::Color>) {
+        self.change_bracket_color(color);
+        self.print();
+    }
+
+    pub fn change_last_character_print(&mut self, character: char) {
+        self.change_last_character(character);
+        self.print();
+    }
+
+    pub fn change_character_type_print(&mut self, character: char) {
+        self.change_character_type(character);
+        self.print();
     }
 
     pub fn advance_by_percent(&mut self, percentage: f32) {
@@ -266,6 +299,10 @@ mod auto_run {
                 space_left: len - start,
                 half: false,
                 start_pos,
+                character: '\u{2589}',
+                last_character: '\u{258c}',
+                bracket_color: None
+
             };
             LoadingBar::auto_run_from(self_clone, time_in_seconds)
         }

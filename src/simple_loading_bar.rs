@@ -3,9 +3,9 @@ use std::fmt::Display;
 
 use colored::Colorize;
 
-/// like a LoadingBar, but only uses `'\r'` instead of `crossterm::cursor` to update the loading bar
-/// This may makeit easeir to use especially when scrolling is involved
-/// Nothing else can be printed to the same shell/terminal while it is running or else you might get weird results
+/// like a LoadingBar, but only uses `'\r'` instead of `crossterm::cursor` to update the loading bar.
+/// This may makeit easeir to use especially when scrolling is involved.
+/// Nothing else can be printed to the same shell/terminal while it is running or else you might get weird results.
 pub struct SimpleLoadingBar {
     len: u16,
     index: u16,
@@ -28,7 +28,7 @@ impl SimpleLoadingBar {
             space_left: len,
             half: false,
             character: '\u{2589}',
-            last_character: '>',
+            last_character: '\u{258c}',
             bracket_color: None,
         }
     }
@@ -192,7 +192,7 @@ mod auto_run {
                 space_left: len - start,
                 half: false,
                 character: '\u{2589}',
-                last_character: '>',
+                last_character: '\u{258c}',
                 bracket_color: None,
             };
             SimpleLoadingBar::auto_run_from(self_clone, time_in_seconds)
