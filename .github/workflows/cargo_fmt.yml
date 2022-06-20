@@ -1,13 +1,10 @@
 name: cargo fmt
-
-
 on:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
   
- 
 jobs:
   black:
     runs-on: ubuntu-latest
