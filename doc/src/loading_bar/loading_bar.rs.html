@@ -382,6 +382,43 @@
 <span id="377">377</span>
 <span id="378">378</span>
 <span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Home of the LoadingBar methods and its associated structs and enums.</span>
 <span class="kw">use</span> <span class="ident">colored</span>::{<span class="ident">Color</span>, <span class="ident">Colorize</span>};
 <span class="kw">use</span> <span class="ident">crossterm::cursor</span>::{<span class="ident">RestorePosition</span>, <span class="ident">SavePosition</span>};
@@ -444,6 +481,9 @@
     <span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">space_left</span>: <span class="ident">u16</span>,
     <span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">half</span>: <span class="ident">bool</span>,
     <span class="ident">start_pos</span>: (<span class="ident">u16</span>, <span class="ident">u16</span>),
+    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">character</span>: <span class="ident">char</span>,
+    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">last_character</span>: <span class="ident">char</span>,
+    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="ident">bracket_color</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">colored::Color</span><span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// # These methods are for basic loading bar creation and manipulation.</span>
@@ -461,6 +501,9 @@
             <span class="ident">space_left</span>: <span class="ident">len</span>,
             <span class="ident">half</span>: <span class="bool-val">false</span>,
             <span class="ident">start_pos</span>,
+            <span class="ident">character</span>: <span class="string">&#39;\u{2589}&#39;</span>,
+            <span class="ident">last_character</span>: <span class="string">&#39;\u{258c}&#39;</span>,
+            <span class="ident">bracket_color</span>: <span class="prelude-val">None</span>,
         }
     }
 
@@ -497,6 +540,33 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">advance_by_print</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">index</span>: <span class="ident">u16</span>) {
         <span class="self">self</span>.<span class="ident">adv_index_print</span>(<span class="ident">index</span>);
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_character_type</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">character</span>: <span class="ident">char</span>) {
+        <span class="self">self</span>.<span class="ident">character</span> <span class="op">=</span> <span class="ident">character</span>;
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_last_character</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">character</span>: <span class="ident">char</span>) {
+        <span class="self">self</span>.<span class="ident">last_character</span> <span class="op">=</span> <span class="ident">character</span>;
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_bracket_color</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">color</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">colored::Color</span><span class="op">&gt;</span>) {
+        <span class="self">self</span>.<span class="ident">bracket_color</span> <span class="op">=</span> <span class="ident">color</span>;
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_bracket_color_print</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">color</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">colored::Color</span><span class="op">&gt;</span>) {
+        <span class="self">self</span>.<span class="ident">change_bracket_color</span>(<span class="ident">color</span>);
+        <span class="self">self</span>.<span class="ident">print</span>();
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_last_character_print</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">character</span>: <span class="ident">char</span>) {
+        <span class="self">self</span>.<span class="ident">change_last_character</span>(<span class="ident">character</span>);
+        <span class="self">self</span>.<span class="ident">print</span>();
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_character_type_print</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">character</span>: <span class="ident">char</span>) {
+        <span class="self">self</span>.<span class="ident">change_character_type</span>(<span class="ident">character</span>);
+        <span class="self">self</span>.<span class="ident">print</span>();
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">advance_by_percent</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">percentage</span>: <span class="ident">f32</span>) {
@@ -650,6 +720,10 @@
                 <span class="ident">space_left</span>: <span class="ident">len</span> <span class="op">-</span> <span class="ident">start</span>,
                 <span class="ident">half</span>: <span class="bool-val">false</span>,
                 <span class="ident">start_pos</span>,
+                <span class="ident">character</span>: <span class="string">&#39;\u{2589}&#39;</span>,
+                <span class="ident">last_character</span>: <span class="string">&#39;\u{258c}&#39;</span>,
+                <span class="ident">bracket_color</span>: <span class="prelude-val">None</span>
+
             };
             <span class="ident">LoadingBar::auto_run_from</span>(<span class="ident">self_clone</span>, <span class="ident">time_in_seconds</span>)
         }

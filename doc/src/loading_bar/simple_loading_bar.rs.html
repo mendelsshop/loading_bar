@@ -303,9 +303,9 @@
 
 <span class="kw">use</span> <span class="ident">colored::Colorize</span>;
 
-<span class="doccomment">/// like a LoadingBar, but only uses `&#39;\r&#39;` instead of `crossterm::cursor` to update the loading bar</span>
-<span class="doccomment">/// This may makeit easeir to use especially when scrolling is involved</span>
-<span class="doccomment">/// Nothing else can be printed to the same shell/terminal while it is running or else you might get weird results</span>
+<span class="doccomment">/// like a LoadingBar, but only uses `&#39;\r&#39;` instead of `crossterm::cursor` to update the loading bar.</span>
+<span class="doccomment">/// This may makeit easeir to use especially when scrolling is involved.</span>
+<span class="doccomment">/// Nothing else can be printed to the same shell/terminal while it is running or else you might get weird results.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SimpleLoadingBar</span> {
     <span class="ident">len</span>: <span class="ident">u16</span>,
     <span class="ident">index</span>: <span class="ident">u16</span>,
@@ -328,7 +328,7 @@
             <span class="ident">space_left</span>: <span class="ident">len</span>,
             <span class="ident">half</span>: <span class="bool-val">false</span>,
             <span class="ident">character</span>: <span class="string">&#39;\u{2589}&#39;</span>,
-            <span class="ident">last_character</span>: <span class="string">&#39;&gt;&#39;</span>,
+            <span class="ident">last_character</span>: <span class="string">&#39;\u{258c}&#39;</span>,
             <span class="ident">bracket_color</span>: <span class="prelude-val">None</span>,
         }
     }
@@ -492,7 +492,7 @@
                 <span class="ident">space_left</span>: <span class="ident">len</span> <span class="op">-</span> <span class="ident">start</span>,
                 <span class="ident">half</span>: <span class="bool-val">false</span>,
                 <span class="ident">character</span>: <span class="string">&#39;\u{2589}&#39;</span>,
-                <span class="ident">last_character</span>: <span class="string">&#39;&gt;&#39;</span>,
+                <span class="ident">last_character</span>: <span class="string">&#39;\u{258c}&#39;</span>,
                 <span class="ident">bracket_color</span>: <span class="prelude-val">None</span>,
             };
             <span class="ident">SimpleLoadingBar::auto_run_from</span>(<span class="ident">self_clone</span>, <span class="ident">time_in_seconds</span>)

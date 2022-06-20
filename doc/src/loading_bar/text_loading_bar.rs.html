@@ -572,6 +572,51 @@
 <span id="567">567</span>
 <span id="568">568</span>
 <span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Home of the TextLoadingBar methods and its associated structs and enums.</span>
 
 <span class="kw">use</span> <span class="ident">std</span>::{
@@ -597,6 +642,7 @@
     <span class="ident">Color</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Color</span><span class="op">&gt;</span>),
     <span class="ident">Number</span>(<span class="ident">u16</span>),
     <span class="ident">Float</span>(<span class="ident">f32</span>),
+    <span class="ident">Character</span>(<span class="ident">char</span>),
     <span class="ident">Pos</span>(<span class="ident">u16</span>, <span class="ident">u16</span>),
     <span class="prelude-val">None</span>,
 }
@@ -634,6 +680,12 @@
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">TextLoadingBarOptions::Pos</span>(<span class="ident">x</span>, <span class="ident">y</span>) =&gt; (<span class="kw-2">*</span><span class="ident">x</span>, <span class="kw-2">*</span><span class="ident">y</span>),
             <span class="kw">_</span> =&gt; (<span class="number">0</span>, <span class="number">0</span>),
+        }
+    }
+    <span class="kw">fn</span> <span class="ident">get_character</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">char</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">TextLoadingBarOptions::Character</span>(<span class="ident">character</span>) =&gt; <span class="kw-2">*</span><span class="ident">character</span>,
+            <span class="kw">_</span> =&gt; <span class="string">&#39; &#39;</span>,
         }
     }
 }
@@ -746,6 +798,34 @@
         }
 
         <span class="self">self</span>.<span class="ident">t_start_pos</span> <span class="op">=</span> <span class="ident">t_start_pos</span>;
+
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_bracket_color</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">color</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">colored::Color</span><span class="op">&gt;</span>) {
+        <span class="self">self</span>.<span class="ident">t_bar</span>.<span class="ident">change_bracket_color</span>(<span class="ident">color</span>);
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_bracket_color_print</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">color</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">colored::Color</span><span class="op">&gt;</span>) {
+        <span class="self">self</span>.<span class="ident">t_bar</span>.<span class="ident">change_bracket_color</span>(<span class="ident">color</span>);
+        <span class="self">self</span>.<span class="ident">goline_clear_print</span>();
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_character_type</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">character</span>: <span class="ident">char</span>) {
+        <span class="self">self</span>.<span class="ident">t_bar</span>.<span class="ident">change_character_type</span>(<span class="ident">character</span>);
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_character_type_print</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">character</span>: <span class="ident">char</span>) {
+        <span class="self">self</span>.<span class="ident">t_bar</span>.<span class="ident">change_character_type</span>(<span class="ident">character</span>);
+        <span class="self">self</span>.<span class="ident">goline_clear_print</span>();
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_last_character</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">character</span>: <span class="ident">char</span>) {
+        <span class="self">self</span>.<span class="ident">t_bar</span>.<span class="ident">change_last_character</span>(<span class="ident">character</span>);
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_last_character_print</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">character</span>: <span class="ident">char</span>) {
+        <span class="self">self</span>.<span class="ident">t_bar</span>.<span class="ident">change_last_character</span>(<span class="ident">character</span>);
+        <span class="self">self</span>.<span class="ident">goline_clear_print</span>();
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_pos_print</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">t_start_pos</span>: (<span class="ident">u16</span>, <span class="ident">u16</span>)) {
@@ -773,10 +853,11 @@
         <span class="self">self</span>.<span class="ident">t_bar</span>.<span class="ident">color</span> <span class="op">=</span> <span class="ident">color</span>;
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_all_text_colors</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">color</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Color</span><span class="op">&gt;</span>) {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">change_all_colors</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">color</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Color</span><span class="op">&gt;</span>) {
         <span class="self">self</span>.<span class="ident">top_text</span>.<span class="ident">color</span> <span class="op">=</span> <span class="ident">color</span>;
         <span class="self">self</span>.<span class="ident">bottom_text</span>.<span class="ident">color</span> <span class="op">=</span> <span class="ident">color</span>;
         <span class="self">self</span>.<span class="ident">t_bar</span>.<span class="ident">color</span> <span class="op">=</span> <span class="ident">color</span>;
+        <span class="self">self</span>.<span class="ident">t_bar</span>.<span class="ident">change_bracket_color</span>(<span class="ident">color</span>);
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">advance</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
@@ -825,8 +906,8 @@
                 <span class="string">&quot;bar_color&quot;</span> =&gt; {
                     <span class="self">self</span>.<span class="ident">change_bar_color</span>(<span class="ident">value</span>.<span class="ident">get_color</span>());
                 }
-                <span class="string">&quot;all_text_colors&quot;</span> =&gt; {
-                    <span class="self">self</span>.<span class="ident">change_all_text_colors</span>(<span class="ident">value</span>.<span class="ident">get_color</span>());
+                <span class="string">&quot;all_colors&quot;</span> =&gt; {
+                    <span class="self">self</span>.<span class="ident">change_all_colors</span>(<span class="ident">value</span>.<span class="ident">get_color</span>());
                 }
                 <span class="string">&quot;advance&quot;</span> =&gt; {
                     <span class="self">self</span>.<span class="ident">advance</span>();
@@ -839,6 +920,15 @@
                 }
                 <span class="string">&quot;change_pos&quot;</span> =&gt; {
                     <span class="self">self</span>.<span class="ident">change_pos</span>(<span class="ident">value</span>.<span class="ident">get_pos</span>());
+                }
+                <span class="string">&quot;change_character_type&quot;</span> =&gt; {
+                    <span class="self">self</span>.<span class="ident">change_character_type</span>(<span class="ident">value</span>.<span class="ident">get_character</span>());
+                }
+                <span class="string">&quot;change_last_character&quot;</span> =&gt; {
+                    <span class="self">self</span>.<span class="ident">change_last_character</span>(<span class="ident">value</span>.<span class="ident">get_character</span>());
+                }
+                <span class="string">&quot;change_bracket_color&quot;</span> =&gt; {
+                    <span class="self">self</span>.<span class="ident">change_bracket_color</span>(<span class="ident">value</span>.<span class="ident">get_color</span>());
                 }
                 <span class="kw">_</span> =&gt; {
                     <span class="macro">panic!</span>(<span class="string">&quot;\x07{}\x07 is not a valid key&quot;</span>, <span class="ident">key</span>);
