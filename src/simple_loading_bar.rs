@@ -14,7 +14,7 @@ pub enum SimpleLoadingBarOptions {
 impl SimpleLoadingBarOptions {
     fn get_color(&self) -> Option<Color> {
         match self {
-            SimpleLoadingBarOptions::Color(color) => color.clone(),
+            SimpleLoadingBarOptions::Color(color) => *color,
             _ => None,
         }
     }
@@ -67,7 +67,7 @@ impl SimpleLoadingBar {
             bracket_color: None,
         }
     }
-    pub fn print(&self) {
+    pub fn print(&  self) {
         print!("\r{}", self);
     }
 
@@ -235,15 +235,9 @@ impl Display for SimpleLoadingBar {
         write!(
             f,
             "{}{}{}{}",
-            "[".color(
-                self.bracket_color
-                    .unwrap_or(self.color.unwrap_or(colored::Color::White))
-            ),
+            "[".color(self.bracket_color.unwrap_or(colored::Color::White)),
             bar.color(self.color.unwrap_or(colored::Color::White)), // if we have a color, use it, otherwise use white
-            "]".color(
-                self.bracket_color
-                    .unwrap_or(self.color.unwrap_or(colored::Color::White))
-            ),
+            "]".color(self.bracket_color.unwrap_or(colored::Color::White)),
             if self.done {
                 "\n".to_string()
             } else {
